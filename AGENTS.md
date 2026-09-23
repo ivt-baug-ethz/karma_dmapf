@@ -6,11 +6,11 @@ points here.
 
 ## Project
 
-**karma_dmapf** is the Python 3.13 research code behind the paper *"Karma Mechanisms for Decentralised, Cooperative Multi Agent Path Finding"*. It simulates a lifelong, orientation-aware warehouse pickup-and-delivery (MAPD) scenario on a grid. Conflicts are resolved by token passing, by pairwise negotiation (egoistic, altruistic, Karma) or by centralised CBS. Key dependencies (pinned in `requirements.txt`): `numpy`, `scipy`, `matplotlib`, `pandas`, `seaborn`, `imageio`, `tqdm`. Everything runs locally as scripts: simulation and analyses in `src/`, paper figures in `src_figures/`. There is no server, deployment target or test suite.
+**karma_dmapf** is the Python 3.13 research code behind the paper *"Karma Mechanisms for Decentralised, Cooperative Multi Agent Path Finding"*. It simulates a lifelong, orientation-aware warehouse pickup-and-delivery (MAPD) scenario on a grid. Conflicts are resolved by token passing, by pairwise negotiation (egoistic, altruistic, Karma) or by centralised CBS. Key dependencies (pinned in `requirements.txt`): `numpy`, `scipy`, `matplotlib`, `pandas`, `seaborn`, `imageio`, `tqdm`. Everything runs locally as scripts: simulation and analyses in `src/`, paper figures in `figures/`. There is no server, deployment target or test suite.
 
-`src/` uses **flat imports** (`from environment import Environment`), so its scripts run with `src/` as the working directory: `cd src && ../venv/bin/python <script>.py`. All outputs are anchored at the repository root. Figure inputs go to `log_files/analysis_N/`, which is committed. Scratch output goes to `results/`, which is git-ignored. Do not add top-level directories without being asked.
+`src/` holds two packages, `simulation/` and `planners/`, plus the entry points in `src/scripts/`. Imports are absolute from the repository root (`from src.simulation.environment import Environment`), so every script runs from the repo root with the venv active and `export PYTHONPATH=.`: `python src/scripts/<script>.py`. Nothing is installed and `sys.path` is never manipulated. All outputs are anchored at the repository root. Figure inputs go to `results/<analysis>/`, which is committed. Run output goes to `results/runs/` and manual copies of old runs go to `results/archive/`; both are git-ignored. Do not add top-level directories without being asked.
 
-Status: **active development**. A restructure into a standard layout is planned (`open_issues` memory). Consult the project memories for the up-to-date picture before assuming any structure.
+Status: **active development**. Consult the project memories for the up-to-date picture before assuming any structure.
 
 ## Project knowledge lives in the memories (read first, every session)
 
@@ -53,9 +53,9 @@ behaviour.
 
 ## Paper data and controllers (hard rules)
 
-- **`log_files/` must always match the current code, but never re-run an analysis without asking.**
+- **The tracked `results/` must always match the current code, but never re-run an analysis without asking.**
   The analyses take minutes to hours. Whenever a change touches simulation code or an analysis
-  script, end your final summary with a reminder naming the analyses whose `log_files/` are now
+  script, end your final summary with a reminder naming the analyses whose `results/<analysis>/` are now
   stale, and offer to regenerate them. The `analysis_and_figures` memory maps code → analysis → figure.
 - **All eight controllers keep code support**, but the evaluations and figures use only the four
   paper controllers: token passing, egoistic, altruistic, and Karma (`TRIP_KARMA`). Never add
@@ -75,8 +75,9 @@ behaviour.
 ```bash
 python3.13 -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
+export PYTHONPATH=.   # from the repo root, before running any script
 ```
 
-- No test suite. Formatting: `black src src_figures` (CI checks it). Linting: `./venv/bin/pylint src --errors-only` must be clean. That is the CI gate.
-- Figures: `python src_figures/Figure_N.py --no-show --output-dir <dir>` must keep rendering (CI workflow `figure-plots.yml`).
-- Scratch outputs go to `results/` and are git-ignored; do not commit them.
+- No test suite. Formatting: `black src figures` (CI checks it). Linting: `PYTHONPATH=. ./venv/bin/pylint src --errors-only` must be clean. That is the CI gate.
+- Figures: `python figures/Figure_N.py --no-show --output-dir <dir>` must keep rendering (CI workflow `figure-plots.yml`).
+- Scratch outputs go to `results/runs/` (automatic) or `results/archive/` (manual copies), which are git-ignored; do not commit them.

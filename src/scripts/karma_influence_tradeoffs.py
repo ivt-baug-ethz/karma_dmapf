@@ -1,12 +1,12 @@
 """Single-grid karma influence analysis.
 
-This script mirrors the core mechanics of ``_karma_influence_sweep.py`` but
+This script mirrors the core mechanics of ``karma_influence_sweep.py`` but
 targets one grid size and one agent count. It sweeps only the karma influence
 parameter (delta is fixed to 1.0) for four controllers: token-passing, egoistic,
 altruistic, and trip-karma. Seeded runs are parallelized. Results are written
-to a timestamped folder under ``results/`` and aggregated into a single
-``summary.json`` stored both in that folder and in ``log_files/analysis_4/``
-for downstream use.
+to a timestamped folder under ``results/runs/`` and aggregated into a single
+``summary.json`` stored both in that folder and in ``results/karma_influence_tradeoffs/``
+for downstream plotting (``figures/Figure_4.py``).
 """
 
 from __future__ import annotations
@@ -24,15 +24,15 @@ from typing import Any, Dict, List, Tuple
 
 from tqdm import tqdm
 
-from analysis_helpers import compute_run_metrics, summarize
-from constants import (
+from src.simulation.metrics import compute_run_metrics, summarize
+from src.simulation.constants import (
     MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_ALTRUISTIC,
     MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_EGOISTIC,
     MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_TRIP_KARMA,
     MAPF_CONTROLLER_DECENTRALIZED_TOKEN_PASSING,
 )
-from environment import Environment
-from planner_path_astar import AStarPathPlanner
+from src.simulation.environment import Environment
+from src.planners.astar import AStarPathPlanner
 
 logging.basicConfig(
     level=logging.INFO,
@@ -281,11 +281,10 @@ def main() -> None:
         delta_threshold=DELTA_THRESHOLD,
     )
 
-    project_root = Path(__file__).resolve().parent.parent
-    results_root = project_root / "results"
-    logs_dir = project_root / "log_files" / "analysis_4"
+    results_root = Path(__file__).resolve().parents[2] / "results"
+    logs_dir = results_root / "karma_influence_tradeoffs"
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    out_dir = results_root / f"figure4_karma_influence_{timestamp}"
+    out_dir = results_root / "runs" / f"karma_influence_tradeoffs_{timestamp}"
 
     base_settings = _build_settings(BASE_SIMULATION_SETTINGS, cfg)
     env_grid_size = cfg.grid_size + 2  # preserve existing +2 padding convention

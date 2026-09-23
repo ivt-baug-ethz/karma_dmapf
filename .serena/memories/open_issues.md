@@ -2,22 +2,15 @@
 
 Remove an entry once it is resolved. Add new ones only when they are real and non-obvious.
 
-## Planned: restructure into a standard repository layout
+## Planned: deduplicate the scripts
 
-The current layout is a research dump:
-- flat imports that force cwd `src/`
+The directory layout is settled (`mem:core`), but the scripts still carry research debt:
 - the step loop copy-pasted into every script
 - three copies of the settings dict
-- per-script `gini/summarize` duplicates (analysis 3)
+- per-script `gini/summarize` duplicates (karma_influence)
 - analysis configuration by editing constants
-- stray tracked files (`Figure_3.png` at root)
 
-Target:
-- a proper package (`python -m ...`, no flat imports)
-- one shared simulation runner and settings source
-- one output convention: figure inputs in `log_files/`, scratch in `results/`
-
-The root-anchored output paths are the interim fix. Do not start this refactor unasked.
+Target: one shared simulation runner and settings source. Do not start this refactor unasked.
 
 ## Controller support to restore/verify
 
@@ -33,8 +26,7 @@ them must not add them to any analysis or figure.
 
 ## Known quirks
 
-- `_analysis_1` names its output JSON after the last controller of its loop, so run one controller per
+- `efficiency_benchmark` names its output JSON after the last controller of its loop, so run one controller per
   invocation (`mem:analysis_and_figures`).
 - The TRIP_KARMA reset compares `settings["mapf_control"]` with a string literal instead of
   `MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_TRIP_KARMA`.
-- `README.md` run instructions omit the `cd src` requirement and name `Figure_3_v2.py`, which does not exist.

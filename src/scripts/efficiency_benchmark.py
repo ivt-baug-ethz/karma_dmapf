@@ -15,11 +15,11 @@ from concurrent.futures import ThreadPoolExecutor
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-from analysis_helpers import gini, summarize, compute_run_metrics
-from environment import Environment
-from planner_path_astar import AStarPathPlanner
+from src.simulation.metrics import gini, summarize, compute_run_metrics
+from src.simulation.environment import Environment
+from src.planners.astar import AStarPathPlanner
 
-from constants import (
+from src.simulation.constants import (
     MAPF_CONTROLLER_CENTRALIZED,
     MAPF_CONTROLLER_DECENTRALIZED_TOKEN_PASSING,
     MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_EGOISTIC,
@@ -29,9 +29,9 @@ from constants import (
 )
 
 # outputs are anchored at the repository root, independent of the working directory
-ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-RESULTS_DIR = os.path.join(ROOT_DIR, "results")
-LOG_DIR = os.path.join(ROOT_DIR, "log_files", "analysis_1")
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+RESULTS_DIR = os.path.join(ROOT_DIR, "results", "runs", "efficiency_benchmark")
+LOG_DIR = os.path.join(ROOT_DIR, "results", "efficiency_benchmark")
 os.makedirs(RESULTS_DIR, exist_ok=True)
 os.makedirs(LOG_DIR, exist_ok=True)
 
@@ -484,7 +484,7 @@ for grid_size in grid_sizes:
                 ] = agent_data
 
     with open(
-        os.path.join(LOG_DIR, f"summary_{controller}_{grid_size}.json"), "w"
+        os.path.join(LOG_DIR, f"summary_{controllers[-1]}_{grid_size}.json"), "w"
     ) as f_json:
         # Custom encoder to handle numpy arrays
         class NumpyEncoder(json.JSONEncoder):

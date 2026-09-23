@@ -10,7 +10,7 @@ Everything above is shared with all agents. This part covers only what is specif
 - `.claude/settings.json` denies `EnterWorktree`, `git worktree`, `git commit` and `git stash`, and pins `worktree.bgIsolation: none`. If some harness default tries to move you into a worktree, stay in the main checkout instead.
 - Stop hooks enforce the definition of done (details in the `task_completion` memory):
   - the memory check and `pylint --errors-only` block the turn
-  - the `log_files/` regeneration reminder shows the user a non-blocking message
+  - the `results/` regeneration reminder shows the user a non-blocking message
 
   Never work around a blocking hook by stashing or committing.
 

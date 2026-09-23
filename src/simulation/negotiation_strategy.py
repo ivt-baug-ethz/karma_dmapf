@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Any, Optional
 import numpy as np
 
 if TYPE_CHECKING:
-    from agent import Agent
+    from src.simulation.agent import Agent
 
 
 class NegotiationStrategy:

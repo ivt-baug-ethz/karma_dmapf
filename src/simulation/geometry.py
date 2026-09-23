@@ -2,13 +2,13 @@ from __future__ import annotations
 from typing import List, Optional, Tuple, Dict, Any, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from agent import Agent
-    from environment import Environment
-    from planner_path_astar import PathPlannerState
+    from src.simulation.agent import Agent
+    from src.simulation.environment import Environment
+    from src.planners.astar import PathPlannerState
     from numpy.typing import NDArray
 
 
-from constants import (
+from src.simulation.constants import (
     AGENT_ORIENTATION_EAST,
     AGENT_ORIENTATION_WEST,
     AGENT_ORIENTATION_NORTH,
@@ -16,7 +16,7 @@ from constants import (
 )
 
 import numpy as np
-from constants import (
+from src.simulation.constants import (
     SQUARE_SYMBOL_EMPTY,
     SQUARE_SYMBOL_OCCUPIED,
     SPAWN_BORDER,

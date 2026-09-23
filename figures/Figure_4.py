@@ -1,3 +1,13 @@
+"""Figure 4 (supplementary): trade-off metrics vs karma influence, one figure per metric.
+
+Reads ``results/karma_influence_tradeoffs/summary_grid{GRID}_agents{AGENTS}_T100.json`` for the
+scenarios 5x5/10, 10x10/30 and 15x15/80 agents (3 files). To regenerate them, run
+
+    python src/scripts/karma_influence_tradeoffs.py
+
+once per scenario, setting ``GRID_SIZE`` and ``N_AGENTS`` at the top of the script.
+"""
+
 from __future__ import annotations
 
 import json
@@ -10,10 +20,10 @@ from typing import Any, Dict, List
 
 import pandas as pd
 
-# Folder containing summaries produced by analysis_4. Replace with your actual run.
-FOLDER = Path(__file__).resolve().parent.parent / "log_files" / "analysis_4"
+FOLDER = (
+    Path(__file__).resolve().parent.parent / "results" / "karma_influence_tradeoffs"
+)
 
-# Placeholders – replace with the concrete summary filenames you generate for each grid/agent setup.
 SUMMARY_FILES = [
     "summary_grid5_agents10_T100.json",
     "summary_grid10_agents30_T100.json",
@@ -60,7 +70,7 @@ def _plot_metric(
     metric_name: str,
 ) -> None:
     for controller, label in CONTROLLER_LABELS.items():
-        subset = summary_df[
+        subset = summary_df.loc[
             (summary_df["controller"] == controller)
             & (summary_df["metric"] == metric_name)
         ]
@@ -102,7 +112,9 @@ def plot_tradeoffs(
     show: bool = True,
 ) -> None:
     if any(df.empty for df in summary_dfs):
-        raise ValueError("One or more summaries are empty; run analysis_4 first.")
+        raise ValueError(
+            "One or more summaries are empty; run karma_influence_tradeoffs.py first."
+        )
 
     for metric in TRADEOFF_METRICS:
         plt.style.use("default")

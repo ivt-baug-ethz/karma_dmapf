@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Stop hook: ensure pylint reports no errors before finishing.
 #
-# Mirrors the gate CI enforces (`pylint src --errors-only` in .github/workflows/lint.yml).
+# Mirrors the gate CI enforces (`PYTHONPATH=. pylint src --errors-only` in .github/workflows/lint.yml).
 # Fires only when Python files have uncommitted changes (staged, unstaged or untracked)
 # and blocks when pylint reports any error-category message, so a broken import or a bad
 # call cannot slip out unnoticed. Self-terminating: once the errors are fixed (or the .py
@@ -25,13 +25,13 @@ pylint="$repo/venv/bin/pylint"
 
 [ -d src ] || exit 0
 
-report="$("$pylint" src --errors-only 2>&1 || true)"
+report="$(PYTHONPATH=. "$pylint" src --errors-only 2>&1 || true)"
 errors="$(printf '%s\n' "$report" | grep -cE '^[^ ]+\.py:[0-9]+:[0-9]+: E[0-9]+' || true)"
 
 [ "$errors" -eq 0 ] && exit 0
 
 # Keep the blocking reason short; the agent re-runs the command to see the detail.
 cat <<JSON
-{"decision":"block","reason":"pylint reported ${errors} error(s). Run './venv/bin/pylint src --errors-only', fix each one (or add a scoped, justified disable), then finish. This is the same gate CI enforces."}
+{"decision":"block","reason":"pylint reported ${errors} error(s). Run 'PYTHONPATH=. ./venv/bin/pylint src --errors-only', fix each one (or add a scoped, justified disable), then finish. This is the same gate CI enforces."}
 JSON
 exit 0

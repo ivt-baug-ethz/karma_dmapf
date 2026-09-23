@@ -2,14 +2,14 @@ from __future__ import annotations
 from typing import List, Tuple, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from agent import Agent
-    from task import Task
+    from src.simulation.agent import Agent
+    from src.simulation.task import Task
     from numpy.typing import NDArray
 
 import numpy as np
 from scipy.optimize import linear_sum_assignment
-from geometry import Geometry
-from constants import AGENT_STATUS_CARRY
+from src.simulation.geometry import Geometry
+from src.simulation.constants import AGENT_STATUS_CARRY
 
 
 class Planner_Assignment_Central:

@@ -14,12 +14,13 @@
       "mcp__serena__write_memory",
       "mcp__serena__edit_memory",
       "mcp__serena__get_diagnostics_for_file",
-      "Bash(python src_figures/*)",
-      "Bash(./venv/bin/python src_figures/*)",
+      "Bash(python figures/*)",
+      "Bash(./venv/bin/python figures/*)",
       "Bash(black *)",
       "Bash(./venv/bin/black *)",
       "Bash(./venv/bin/pylint*)",
       "Bash(pylint*)",
+      "Bash(PYTHONPATH=. ./venv/bin/pylint*)",
       "Bash(pip show*)",
       "Bash(pip list*)",
       "Bash(pip freeze*)"
@@ -61,7 +62,7 @@
           {
             "type": "command",
             "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/results-regeneration-reminder.sh\"",
-            "statusMessage": "Checking log_files match the code"
+            "statusMessage": "Checking results match the code"
           }
         ]
       }

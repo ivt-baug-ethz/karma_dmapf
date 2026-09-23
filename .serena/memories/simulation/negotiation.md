@@ -13,8 +13,8 @@
 | `CENTRALIZED` | CBS (§II-B only) | `Planner_CBS` (`mem:simulation/core`) | no |
 
 The figures use a fixed label and colour for each paper controller: Token Passing `dodgerblue`,
-Egoistic `olive`, Altruistic `green`, Karma `red`. Keep them identical across `src_figures/`. The
-old name `DECENTRALIZED_RESPECT` (still in a README GIF filename) is token passing.
+Egoistic `olive`, Altruistic `green`, Karma `red`. Keep them identical across `figures/`. The
+old name `DECENTRALIZED_RESPECT` (still in some archived run files) is token passing.
 
 ## Negotiation protocol (`handle_agents_route_planning_decentralized_negotiate`, paper Alg. 1)
 

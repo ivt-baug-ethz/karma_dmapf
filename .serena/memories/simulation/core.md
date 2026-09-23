@@ -13,7 +13,7 @@ while env.time < T:
     n_astar += AStarPathPlanner.get_counter(); AStarPathPlanner.reset_counter()
 ```
 
-`_example_simulation_performance_tracking` spawns at most one task per step (`if`, not `while`);
+`performance_tracking` spawns at most one task per step (`if`, not `while`);
 every other script tops up. A change to the loop must be repeated in each script
 (`mem:open_issues`).
 
@@ -67,8 +67,8 @@ across seed jobs.
 
 - `GridTools.detect_conflicts`: vertex (same cell, same t) and edge (swap) conflicts, at most one per
   other agent (the earliest). Positions after a path ends are held at the last state.
-- `_example_visualize_simulation.check_violation` asserts no vertex or edge conflict after each step.
-  It is the only runtime collision check (commented out in analysis_2).
+- `visualize_simulation.check_violation` asserts no vertex or edge conflict after each step.
+  It is the only runtime collision check (commented out in time_distribution).
 
 ## Centralised CBS (`CENTRALIZED`)
 

@@ -26,16 +26,16 @@ jobs:
               run: mkdir -p ci_figures
 
             - name: Render Figure 1
-              run: python src_figures/Figure_1.py --no-show --output-dir ci_figures
+              run: python figures/Figure_1.py --no-show --output-dir ci_figures
 
             - name: Render Figure 2
-              run: python src_figures/Figure_2.py --no-show --output-dir ci_figures
+              run: python figures/Figure_2.py --no-show --output-dir ci_figures
 
             - name: Render Figure 3
-              run: python src_figures/Figure_3.py --no-show --output-dir ci_figures
+              run: python figures/Figure_3.py --no-show --output-dir ci_figures
 
             - name: Render Figure 4
-              run: python src_figures/Figure_4.py --no-show --output-dir ci_figures
+              run: python figures/Figure_4.py --no-show --output-dir ci_figures
 
             - name: Verify outputs
               run: |

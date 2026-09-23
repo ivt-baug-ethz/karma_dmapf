@@ -1,3 +1,15 @@
+"""Figure 1: efficiency benchmark (completed tasks, A* calls, task and service time vs #agents).
+
+Reads ``results/efficiency_benchmark/summary_{CONTROLLER}_{GRID}.json`` for the four paper
+controllers on the 5x5, 10x10 and 15x15 grids (12 files). To regenerate them, run
+
+    python src/scripts/efficiency_benchmark.py
+
+once per controller and grid, setting ``controllers`` to a single controller and ``grid_sizes`` to a
+single grid at the top of the script (the output file is named after the last controller in the
+list).
+"""
+
 import json
 import argparse
 import os
@@ -9,7 +21,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 
 # Constants / data paths
-folder = Path(__file__).resolve().parent.parent / "log_files" / "analysis_1"
+folder = Path(__file__).resolve().parent.parent / "results" / "efficiency_benchmark"
 FIGURE_WIDTH = 6.0 * 2
 FIGURE_HEIGHT = 5.0
 

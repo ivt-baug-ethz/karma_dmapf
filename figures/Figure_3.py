@@ -1,3 +1,13 @@
+"""Figure 3: service time increase vs karma influence for the four paper controllers.
+
+Reads ``results/karma_influence/summary_grid{GRID}_agents{AGENTS}_T100.json`` for the scenarios
+5x5/10, 10x10/30 and 15x15/80 agents (3 files). To regenerate them, run
+
+    python src/scripts/karma_influence.py
+
+once per scenario, setting ``GRID_SIZE`` and ``N_AGENTS`` at the top of the script.
+"""
+
 from __future__ import annotations
 
 import os
@@ -9,7 +19,7 @@ from pathlib import Path
 
 import pandas as pd
 
-folder = Path(__file__).resolve().parent.parent / "log_files" / "analysis_3"
+folder = Path(__file__).resolve().parent.parent / "results" / "karma_influence"
 FIGURE_WIDTH = 6.0 * 2
 FIGURE_HEIGHT = 3.0
 
@@ -69,7 +79,7 @@ def plot_influences(
 
     for idx, (ax, summary_df, metadata) in enumerate(zip(axes, summary_dfs, metadatas)):
         for controller, label in CONTROLLER_LABELS.items():
-            subset = summary_df[
+            subset = summary_df.loc[
                 (summary_df["controller"] == controller)
                 & (summary_df["metric"] == METRIC_NAME)
             ]

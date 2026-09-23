@@ -14,7 +14,7 @@ Kevin Riehl, Julius Schlapbach, Anastasious Kouvelas, Michail A. Makridis
   - [Run Simulation & Visualization](#run-simulation)
   - [Run Simulation & Performance Evaluation](#run-simulation)
   - [Replicate Findings from the paper](#replicate-findings)
-- [Log Files](#log-files)
+- [Results](#results)
 - [Citation](#citation)
 </details>
 
@@ -24,16 +24,16 @@ This is the online repository of "Karma Mechanisms for Decentralised, Cooperativ
 
 <table>
 <tr>
-<td><img src="animations/animation_CENTRALIZED.gif" /></td>
-<td><img src="animations/animation_DECENTRALIZED_TOKEN_PASSING.gif" /></td>
+<td><img src="results/animations/animation_CENTRALIZED.gif" /></td>
+<td><img src="results/animations/animation_DECENTRALIZED_TOKEN_PASSING.gif" /></td>
 </tr>
 <tr>
 <td><b><center>CBS (Centralised)</center></b></td>
 <td><b><center>Token-Passing</center></b></td>
 </tr>
 <tr>
-<td><img src="animations/animation_DECENTRALIZED_NEGOTIATE_EGOISTIC.gif" /></td>
-<td><img src="animations/animation_DECENTRALIZED_NEGOTIATE_ALTRUISTIC.gif" /></td>
+<td><img src="results/animations/animation_DECENTRALIZED_NEGOTIATE_EGOISTIC.gif" /></td>
+<td><img src="results/animations/animation_DECENTRALIZED_NEGOTIATE_ALTRUISTIC.gif" /></td>
 </tr>
 <tr>
 <td><b><center>Negotiation (Egoistic)</center></b></td>
@@ -43,10 +43,10 @@ This is the online repository of "Karma Mechanisms for Decentralised, Cooperativ
 
 <table>
 <tr>
-<td><img src="animations/animation_DECENTRALIZED_NEGOTIATE_ALTRUISTIC_5x5_10_modified.gif" /></td>
-<td><img src="animations/animation_DECENTRALIZED_NEGOTIATE_ALTRUISTIC_10x10_30_modified.gif" /></td>
-<td><img src="animations/animation_DECENTRALIZED_NEGOTIATE_ALTRUISTIC_15x15_80_modified.gif" /></td>
-<td><img src="animations/animation_DECENTRALIZED_NEGOTIATE_ALTRUISTIC_20x20_140_modified.gif" /></td>
+<td><img src="results/animations/animation_DECENTRALIZED_NEGOTIATE_ALTRUISTIC_5x5_10_modified.gif" /></td>
+<td><img src="results/animations/animation_DECENTRALIZED_NEGOTIATE_ALTRUISTIC_10x10_30_modified.gif" /></td>
+<td><img src="results/animations/animation_DECENTRALIZED_NEGOTIATE_ALTRUISTIC_15x15_80_modified.gif" /></td>
+<td><img src="results/animations/animation_DECENTRALIZED_NEGOTIATE_ALTRUISTIC_20x20_140_modified.gif" /></td>
 </tr>
 <tr>
 <td><b><center>5x5<br>(10 agents)</center></b></td>
@@ -72,33 +72,38 @@ This repository contains the simulation model and source code to reproduce the f
 
 ```
 ./
-├── annimations/
-│   └── ...
-├── log_files/
-│   └── ...
-├── src/
-│   └── ...
-├── src_figures/
-│   └── ...
-└── ...
+├── figures/            # paper figure scripts and the rendered PNGs
+├── results/            # analysis outputs the figures are rendered from
+│   └── animations/     # GIFs shown in this README
+└── src/
+    ├── planners/       # A*, CBS and task assignment planners
+    ├── scripts/        # simulation, analysis and animation entry points
+    └── simulation/     # environment, agents, tasks, negotiation, metrics
 ```
 
 ## Installation Instructions
 
-Install dependencies with:
+Create a virtual environment and install dependencies with:
 
 ```
+python3.13 -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
+```
+
+All scripts below are run from the repository root with the virtual environment active, after making the root importable once per shell:
+
+```
+export PYTHONPATH=.
 ```
 
 ## Run Instructions
 
 ### Run Simulation & Visualization
 
-You can run the simulation with different `mapf_control` settings and generate a GIF file, by executing:
+You can run the simulation with different `mapf_control` settings and generate a GIF file in `results/animations/`, by executing:
 
 ```
-python _example_visualize_simulation.py
+python src/scripts/visualize_simulation.py
 ```
 
 There are multiple settings you can adjust at the beginning of the script:
@@ -139,7 +144,7 @@ simulation_settings = {
 You can run the simulation with different `mapf_control` settings and generate print statements about the performance of the controller during the simulation by executing:
 
 ```
-python _example_simulation_performance_tracking.py
+python src/scripts/performance_tracking.py
 ```
 
 This generates a performance summary like:
@@ -158,37 +163,40 @@ Distribution:    mean = 5.612 	 std = 0.174
 
 ### Replicate Findings from the paper
 
-To replicate the exact findings from the paper, you can execute the analysis scripts, which will generate log files similar to those stored in the log folder:
+To replicate the exact findings from the paper, you can execute the analysis scripts, which will generate results similar to those stored in the `results` folder:
 
 ```
-python _analysis_1_efficiency_benchmark.py
-python _analysis_2_time_distribution.py
-python _analysis_3_karma_influence.py
-python _analysis_4_karma_influence_sweep.py
-python _analysis_4_karma_influence_tradeoffs.py
+python src/scripts/efficiency_benchmark.py        # results/efficiency_benchmark/      -> Figure_1
+python src/scripts/time_distribution.py           # results/time_distribution/         -> Figure_2
+python src/scripts/karma_influence.py             # results/karma_influence/           -> Figure_3
+python src/scripts/karma_influence_tradeoffs.py   # results/karma_influence_tradeoffs/ -> Figure_4
+python src/scripts/karma_influence_sweep.py       # results/runs/karma_influence_sweep/ (no paper figure)
 ```
 
-To render the visualizations, please exeute the scripts in `src_figures` folder:
+To render the visualizations, please execute the scripts in the `figures` folder:
 
 ```
-python Figure_1.py
-python Figure_2.py
-python Figure_3_v2.py
-python Figure_4.py
+python figures/Figure_1.py
+python figures/Figure_2.py
+python figures/Figure_3.py
+python figures/Figure_4.py
 ```
 
-## Log Files
+## Results
 
-In the folder `log_files` you will find the log files from each analysis stored in a dedicated folder:
+In the folder `results` you will find the outputs of each analysis stored in a dedicated folder named after its script. Intermediate outputs of every run (per-seed results, reports, animation frames) are written to `results/runs/`, and `results/archive/` holds copies of previous runs. Both are ignored by git.
 
 ```
 ./
 ├── ...
-├── logs/
-│   ├── analysis_1/
-│   ├── analysis_2/
-│   ├── analysis_3/
-│   └── analysis_4/
+├── results/
+│   ├── animations/
+│   ├── efficiency_benchmark/
+│   ├── time_distribution/
+│   ├── karma_influence/
+│   ├── karma_influence_tradeoffs/
+│   ├── runs/
+│   └── archive/
 └── ...
 ```
 

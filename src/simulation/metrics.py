@@ -1,7 +1,8 @@
 """Shared analysis utilities for MAPF evaluations.
 
-Functions here intentionally mirror the implementations used in _analysis.py
-so that downstream scripts can re-use logic without altering behavior.
+Functions here intentionally mirror the implementations used in
+scripts/karma_influence.py so that downstream scripts can re-use logic without
+altering behavior.
 """
 
 from __future__ import annotations
@@ -37,7 +38,7 @@ def compute_run_metrics(
 ) -> Dict[str, float]:
     """Compute per-run metrics shared by analysis scripts.
 
-    The logic mirrors the calculations in _analysis.py to keep results
+    The logic mirrors the calculations in scripts/karma_influence.py to keep results
     consistent across evaluation scripts.
     """
 

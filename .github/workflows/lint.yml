@@ -38,4 +38,4 @@ jobs:
                   python -m pip install --upgrade pip
                   pip install -r requirements.txt
             - name: Run python linting for entire source directory
-              run: pylint src --errors-only
+              run: PYTHONPATH=. pylint src --errors-only

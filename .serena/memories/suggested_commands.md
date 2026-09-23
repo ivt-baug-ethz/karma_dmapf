@@ -1,6 +1,6 @@
 # Commands (macOS / Darwin)
 
-Run from the repo root unless noted, with the venv active.
+Run from the repo root unless noted, with the venv active and `export PYTHONPATH=.` (the `src.` imports need it).
 
 ```bash
 source venv/bin/activate
@@ -11,21 +11,21 @@ brew install python@3.13 && python3.13 -m venv venv && pip install -r requiremen
 ## Gates
 
 ```bash
-black src src_figures                   # format; CI runs psf/black
-./venv/bin/pylint src --errors-only     # the actual gate; must be silent
-for n in 1 2 3 4; do ./venv/bin/python src_figures/Figure_$n.py --no-show --output-dir <scratch>; done
+black src figures                       # format; CI runs psf/black
+PYTHONPATH=. ./venv/bin/pylint src --errors-only   # the actual gate; must be silent
+for n in 1 2 3 4; do ./venv/bin/python figures/Figure_$n.py --no-show --output-dir <scratch>; done
 ```
 
-Render into a scratch dir: the default output dir is `src_figures/` itself, whose PNGs are committed.
+Render into a scratch dir: the default output dir is `figures/` itself, whose PNGs are committed.
 
-## Running simulation code (cwd must be src/: flat imports)
+## Running simulation code (repo root, `PYTHONPATH=.`)
 
 ```bash
-cd src && ../venv/bin/python _example_visualize_simulation.py      # GIF -> results/animation_<CTRL>.gif
-cd src && ../venv/bin/python _analysis_3_karma_influence.py        # edit GRID_SIZE / N_AGENTS first
+./venv/bin/python src/scripts/visualize_simulation.py   # GIF -> results/animations/animation_<CTRL>.gif
+./venv/bin/python src/scripts/karma_influence.py        # edit GRID_SIZE / N_AGENTS first
 ```
 
-Analyses take minutes to hours and write `log_files/`. **Run them only when the user agrees**
+Analyses take minutes to hours and write the tracked `results/<analysis>/`. **Run them only when the user agrees**
 (`mem:task_completion`). Configure them by editing their constants (`mem:analysis_and_figures`).
 
 ## Serena upkeep

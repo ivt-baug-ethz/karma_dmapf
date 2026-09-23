@@ -1,3 +1,15 @@
+"""Figure 2: distribution of task and service times (box plots) per controller.
+
+Reads ``results/time_distribution/all_{task,service}_times_{CONTROLLER}_{GRID}_{AGENTS}.txt`` for
+the four paper controllers in the scenarios 5x5/10, 10x10/30 and 15x15/80 agents (24 files). To
+regenerate them, run
+
+    python src/scripts/time_distribution.py
+
+once per controller and scenario, setting ``grid_size`` (base size + 2), ``n_agents`` and
+``mapf_control`` in ``simulation_settings`` at the top of the script.
+"""
+
 import argparse
 import os
 from pathlib import Path
@@ -6,7 +18,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.patches import Patch
 
-folder = Path(__file__).resolve().parent.parent / "log_files" / "analysis_2"
+folder = Path(__file__).resolve().parent.parent / "results" / "time_distribution"
 FIGURE_WIDTH = 6.0
 FIGURE_HEIGHT = 8.0
 

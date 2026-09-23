@@ -10,11 +10,11 @@ interesting repo: https://github.com/GavinPHR/Multi-Agent-Path-Finding?tab=readm
 ###############################################################################
 import os
 import numpy as np
-from environment import Environment
-from planner_path_astar import AStarPathPlanner
-from visualization import plot_environment_and_reservation, make_gif
+from src.simulation.environment import Environment
+from src.planners.astar import AStarPathPlanner
+from src.simulation.visualization import plot_environment_and_reservation, make_gif
 
-from constants import (
+from src.simulation.constants import (
     MAPF_CONTROLLER_CENTRALIZED,
     MAPF_CONTROLLER_DECENTRALIZED_TOKEN_PASSING,
     MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_EGOISTIC,
@@ -90,9 +90,11 @@ def check_violation(environment, previous_positions=None):
 ###############################################################################
 # outputs are anchored at the repository root, independent of the working directory
 RESULTS_DIR = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "results"
+    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
+    "results",
 )
-FRAMES_DIR = os.path.join(RESULTS_DIR, "figures_gifs")
+ANIMATIONS_DIR = os.path.join(RESULTS_DIR, "animations")
+FRAMES_DIR = os.path.join(RESULTS_DIR, "runs", "visualize_simulation")
 
 environment = Environment(settings=simulation_settings)
 
@@ -145,11 +147,11 @@ while environment.time < environment.settings["time_simulation_duration"]:
     print("\tA-Star Calls:", AStarPathPlanner.get_counter())
     AStarPathPlanner.reset_counter()
 
-os.makedirs(RESULTS_DIR, exist_ok=True)
+os.makedirs(ANIMATIONS_DIR, exist_ok=True)
 make_gif(
     input_pattern=os.path.join(FRAMES_DIR, "x_image_*.png"),
     output_gif=os.path.join(
-        RESULTS_DIR, f"animation_{environment.settings['mapf_control']}.gif"
+        ANIMATIONS_DIR, f"animation_{environment.settings['mapf_control']}.gif"
     ),
     duration=0.2,
 )

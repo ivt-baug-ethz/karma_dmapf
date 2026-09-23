@@ -6,11 +6,11 @@ from typing import List, Optional, Tuple, Set, Dict, Any, TYPE_CHECKING
 if TYPE_CHECKING:
     import numpy as np
     from numpy.typing import NDArray
-    from agent import Agent
+    from src.simulation.agent import Agent
 
 import heapq
 import threading
-from constants import DIRS, DIR_NAMES
+from src.simulation.constants import DIRS, DIR_NAMES
 
 
 class PathPlannerState:

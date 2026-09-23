@@ -2,20 +2,21 @@
 
 Run in this order from the repo root with the venv active:
 
-1. `black src src_figures`: CI fails on any formatting diff (`psf/black@stable`).
-2. `./venv/bin/pylint src --errors-only` must report nothing. This is the gate in CI and locally.
-3. If `src_figures/` or anything they read changed, render all four figures into a scratch dir
+1. `black src figures`: CI fails on any formatting diff (`psf/black@stable`).
+2. `PYTHONPATH=. ./venv/bin/pylint src --errors-only` must report nothing. This is the gate in CI and locally.
+3. If `figures/` or anything they read changed, render all four figures into a scratch dir
    (`mem:suggested_commands`). `figure-plots.yml` fails if one of them errors.
 4. If simulation code changed, run a short smoke simulation of the touched controller(s) with
-   `check_violation` (`_example_visualize_simulation.py` pattern, small grid, few steps), not a full
+   `check_violation` (`src/scripts/visualize_simulation.py` pattern, small grid, few steps), not a full
    analysis. There is no test suite.
 5. **Regeneration reminder.** If a change touches `src/` simulation code or an analysis script, the
-   affected `log_files/analysis_N/` are stale. Do **not** re-run them on your own. End the final
+   affected `results/<analysis>/` are stale. Do **not** re-run them on your own. End the final
    summary with a reminder naming the analyses (and scenarios) to regenerate, and offer to run them.
    Mapping:
-   - core modules → 1–4
-   - `_analysis_N_*` → N
-   - `visualization.py`, `_example_*` and the legacy sweep → none
+   - `simulation/` and `planners/` modules → all four analyses
+   - `scripts/<analysis>.py` → that analysis
+   - `simulation/visualization.py`, `visualize_simulation`, `performance_tracking` and the legacy
+     sweep → none
 
    Once the user agrees, regenerate them and re-render the figures.
 6. Update the serena memories whose content changed (`write_memory`):
@@ -35,8 +36,8 @@ Three hooks in `.claude/settings.json` run at the end of every turn:
 - `serena-memory-reminder.sh` **blocks** when work files are newer than every file in
   `.serena/memories/`, i.e. when step 6 was skipped.
 - `results-regeneration-reminder.sh` **never blocks**. It shows the user a `systemMessage` for step 5
-  while `src/*.py` has uncommitted changes and an affected `log_files/analysis_N/` has none. Any
-  uncommitted edit, even a path-only one, triggers it until the work is committed or the logs are
+  while `src/**/*.py` has uncommitted changes and an affected `results/<analysis>/` has none. Any
+  uncommitted edit, even a path-only one, triggers it until the work is committed or the results are
   regenerated.
 
 The blocking hooks are self-terminating: satisfy the condition (or commit the work) and they pass.

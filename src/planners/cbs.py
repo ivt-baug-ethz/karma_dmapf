@@ -7,11 +7,11 @@ from typing import List, Optional, Tuple, Dict, Any, TYPE_CHECKING
 import heapq
 import itertools
 import numpy as np
-from planner_path_astar import AStarPathPlanner
+from src.planners.astar import AStarPathPlanner
 
 if TYPE_CHECKING:
     from numpy.typing import NDArray
-    from planner_path_astar import PathPlannerState
+    from src.planners.astar import PathPlannerState
 
 
 class CBS_Constraint:

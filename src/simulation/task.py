@@ -2,9 +2,9 @@ from __future__ import annotations
 from typing import List, Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from agent import Agent
-    from environment import Environment
-    from geometry import Grid
+    from src.simulation.agent import Agent
+    from src.simulation.environment import Environment
+    from src.simulation.geometry import Grid
 
 
 class Task:

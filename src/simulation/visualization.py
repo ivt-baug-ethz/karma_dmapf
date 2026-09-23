@@ -5,21 +5,21 @@ from matplotlib.lines import Line2D
 from matplotlib import cm
 from typing import List, Any
 
-from constants import (
+from src.simulation.constants import (
     SQUARE_SYMBOL_OCCUPIED,
     AGENT_STATUS_CARRY,
     AGENT_STATUS_PICKUP,
     AGENT_STATUS_IDLE,
     AGENT_STATUS_DROPOFF,
 )
-from constants import (
+from src.simulation.constants import (
     AGENT_ORIENTATION_SOUTH,
     AGENT_ORIENTATION_NORTH,
     AGENT_ORIENTATION_EAST,
 )
 import imageio.v2 as imageio
 import glob
-from geometry import GridTools
+from src.simulation.geometry import GridTools
 
 
 def plot_grid(environment, save_filename=None):
@@ -416,8 +416,8 @@ def plot_environment_and_reservation(environment, save_filename=None):
 
 
 def make_gif(
-    input_pattern: str = "figs/x_image_*.png",
-    output_gif: str = "figs/animation.gif",
+    input_pattern: str,
+    output_gif: str,
     duration: float = 0.2,
 ) -> None:
     # Collect and sort frames

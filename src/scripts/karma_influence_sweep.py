@@ -2,7 +2,7 @@
 
 This script varies karma influence and delta threshold settings and runs all
 available decentralized policies on a 5x5 grid (with the existing +2 padding).
-Aggregated summaries and figures are written to <repo>/results/karma_sweep/.
+Aggregated summaries and figures are written to <repo>/results/runs/karma_influence_sweep/.
 """
 
 from __future__ import annotations
@@ -20,7 +20,7 @@ from tqdm import tqdm
 from typing import Any, Dict, Iterable, List, Tuple
 
 
-from constants import (
+from src.simulation.constants import (
     MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_ALTRUISTIC,
     MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_ALTRUISTIC2,
     MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_EGOISTIC,
@@ -28,9 +28,9 @@ from constants import (
     MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_TRIP_KARMA,
     MAPF_CONTROLLER_DECENTRALIZED_TOKEN_PASSING,
 )
-from environment import Environment
-from planner_path_astar import AStarPathPlanner
-from analysis_helpers import summarize, compute_run_metrics
+from src.simulation.environment import Environment
+from src.planners.astar import AStarPathPlanner
+from src.simulation.metrics import summarize, compute_run_metrics
 
 logging.basicConfig(
     level=logging.INFO,
@@ -55,7 +55,9 @@ DELTA_THRESHOLDS = [0.5]  # [0.5, 1.5]
 RECOMPUTE_RESULTS = True  # set to False to load cached CSV/JSON and skip reruns
 
 # Output locations
-OUTPUT_DIR = Path(__file__).resolve().parent.parent / "results" / "karma_sweep"
+OUTPUT_DIR = (
+    Path(__file__).resolve().parents[2] / "results" / "runs" / "karma_influence_sweep"
+)
 FIGS_DIR = OUTPUT_DIR / "figs"
 RUNS_JSON = OUTPUT_DIR / "runs.json"
 SEED_RESULTS_DIR = OUTPUT_DIR / "seed_runs"
@@ -69,10 +71,10 @@ ALL_CONTROLLERS = [
     MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_KARMA,
     MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_TRIP_KARMA,
 ]
-KARMA_CONTROLLERS = {
+KARMA_CONTROLLERS = [
     MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_KARMA,
     MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_TRIP_KARMA,
-}
+]
 
 BASE_SIMULATION_SETTINGS: Dict[str, Any] = {
     "time_horizon_visualization": 10,
@@ -425,7 +427,7 @@ def _build_influence_plot_df(
     subsets: List[pd.DataFrame] = []
 
     # Karma controllers: keep their measured rows for this agent count
-    karma_subset = summary_df[
+    karma_subset = summary_df.loc[
         (summary_df["metric"] == metric_name)
         & (summary_df["controller"].isin(KARMA_CONTROLLERS))
         & (summary_df["n_agents"] == n_agents)
@@ -436,7 +438,7 @@ def _build_influence_plot_df(
     subsets.append(karma_subset)
 
     # Non-karma controllers: duplicate their single measurement across all influence values
-    non_karma = summary_df[
+    non_karma = summary_df.loc[
         (summary_df["metric"] == metric_name)
         & (~summary_df["controller"].isin(KARMA_CONTROLLERS))
         & (summary_df["n_agents"] == n_agents)
@@ -460,7 +462,7 @@ def _build_controller_comparison_df(
     summary_df: pd.DataFrame,
     metric_name: str,
 ) -> pd.DataFrame:
-    subset = summary_df[summary_df["metric"] == metric_name].copy()
+    subset = summary_df.loc[summary_df["metric"] == metric_name].copy()
     subset["controller_label"] = subset.apply(
         lambda row: (
             f"{row['controller']} (inf={row['karma_influence']}, delta={row['delta_threshold']})"

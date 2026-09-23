@@ -1,6 +1,5 @@
 {
   "venvPath": ".",
   "venv": "venv",
-  "extraPaths": ["src"],
   "exclude": ["venv", "results", "**/__pycache__"]
 }

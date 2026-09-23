@@ -9,11 +9,11 @@ interesting repo: https://github.com/GavinPHR/Multi-Agent-Path-Finding?tab=readm
 ###### IMPORTS ################################################################
 ###############################################################################
 import numpy as np
-from environment import Environment
-from planner_path_astar import AStarPathPlanner
-from visualization import plot_environment_and_reservation, make_gif
+from src.simulation.environment import Environment
+from src.planners.astar import AStarPathPlanner
+from src.simulation.visualization import plot_environment_and_reservation, make_gif
 
-from constants import (
+from src.simulation.constants import (
     MAPF_CONTROLLER_CENTRALIZED,
     MAPF_CONTROLLER_DECENTRALIZED_TOKEN_PASSING,
     MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_EGOISTIC,

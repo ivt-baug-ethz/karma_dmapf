@@ -5,8 +5,6 @@ __pycache__/
 *$py.class
 .DS_Store
 
-./fig_animation/*
-./src/results/*
 
 # C extensions
 *.so
@@ -211,9 +209,7 @@ marimo/_static/
 marimo/_lsp/
 __marimo__/
 
-# Result directories
-figs/
-results/
-src/figs/*
-src/results/*
+# Untracked results: automatic run output and manual archive copies
+results/runs/
+results/archive/
 

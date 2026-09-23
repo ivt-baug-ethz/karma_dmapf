@@ -2,10 +2,10 @@ from __future__ import annotations
 from typing import Union, List, Optional, Tuple, Dict, Any, Callable, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from planner_path_astar import PathPlannerState
+    from src.planners.astar import PathPlannerState
 
 import numpy as np
-from constants import (
+from src.simulation.constants import (
     MAPF_CONTROLLER_CENTRALIZED,
     MAPF_CONTROLLER_DECENTRALIZED_TOKEN_PASSING,
     MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_EGOISTIC,
@@ -15,12 +15,12 @@ from constants import (
     MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_KARMA,
     MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_TRIP_KARMA,
 )
-from planner_mapf_central_CBS import Planner_CBS
-from planner_assignment_central import Planner_Assignment_Central
-from geometry import Grid, GridTools
-from task import Task
-from negotiation_strategy import NegotiationStrategy
-from agent import Agent
+from src.planners.cbs import Planner_CBS
+from src.planners.assignment import Planner_Assignment_Central
+from src.simulation.geometry import Grid, GridTools
+from src.simulation.task import Task
+from src.simulation.negotiation_strategy import NegotiationStrategy
+from src.simulation.agent import Agent
 
 
 class Environment:

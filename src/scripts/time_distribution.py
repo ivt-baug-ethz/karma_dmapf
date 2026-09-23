@@ -10,11 +10,11 @@ interesting repo: https://github.com/GavinPHR/Multi-Agent-Path-Finding?tab=readm
 ###############################################################################
 import numpy as np
 import os
-from environment import Environment
-from planner_path_astar import AStarPathPlanner
-from visualization import plot_environment_and_reservation, make_gif
+from src.simulation.environment import Environment
+from src.planners.astar import AStarPathPlanner
+from src.simulation.visualization import plot_environment_and_reservation, make_gif
 
-from constants import (
+from src.simulation.constants import (
     MAPF_CONTROLLER_CENTRALIZED,
     MAPF_CONTROLLER_DECENTRALIZED_TOKEN_PASSING,
     MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_EGOISTIC,
@@ -32,8 +32,8 @@ from constants import (
 random_seeds = [n for n in range(41, 51)]
 
 # outputs are anchored at the repository root, independent of the working directory
-ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-LOG_DIR = os.path.join(ROOT_DIR, "log_files", "analysis_2")
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+LOG_DIR = os.path.join(ROOT_DIR, "results", "time_distribution")
 os.makedirs(LOG_DIR, exist_ok=True)
 
 simulation_settings = {

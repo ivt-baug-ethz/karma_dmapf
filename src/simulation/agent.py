@@ -3,28 +3,28 @@ from typing import List, Optional, Tuple, TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from numpy.typing import NDArray
-    from task import Task
-    from environment import Environment
-    from geometry import Grid
-    from planner_path_astar import PathPlannerState
+    from src.simulation.task import Task
+    from src.simulation.environment import Environment
+    from src.simulation.geometry import Grid
+    from src.planners.astar import PathPlannerState
 
 
 import numpy as np
-from planner_path_astar import AStarPathPlanner
-from constants import (
+from src.planners.astar import AStarPathPlanner
+from src.simulation.constants import (
     AGENT_ORIENTATIONS,
     AGENT_STATUS_CARRY,
     AGENT_STATUS_PICKUP,
     AGENT_STATUS_IDLE,
 )
-from constants import (
+from src.simulation.constants import (
     AGENT_ORIENTATION_SOUTH,
     AGENT_ORIENTATION_NORTH,
     AGENT_ORIENTATION_EAST,
     AGENT_ORIENTATION_WEST,
 )
-from constants import IDLING_NEIGHBORHOOD_SEARCH_RANGE
-from geometry import GridTools
+from src.simulation.constants import IDLING_NEIGHBORHOOD_SEARCH_RANGE
+from src.simulation.geometry import GridTools
 
 
 class Agent:
