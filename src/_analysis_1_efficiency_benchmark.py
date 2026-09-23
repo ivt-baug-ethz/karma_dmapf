@@ -28,8 +28,12 @@ from constants import (
     MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_TRIP_KARMA,
 )
 
-# ensure results directory exists
-os.makedirs("results", exist_ok=True)
+# outputs are anchored at the repository root, independent of the working directory
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+RESULTS_DIR = os.path.join(ROOT_DIR, "results")
+LOG_DIR = os.path.join(ROOT_DIR, "log_files", "analysis_1")
+os.makedirs(RESULTS_DIR, exist_ok=True)
+os.makedirs(LOG_DIR, exist_ok=True)
 
 
 random_seeds = range(41, 51)
@@ -153,7 +157,7 @@ def plot_metric(
     grid_size,
     agents,
     controllers,
-    output_dir="results/figs",
+    output_dir=os.path.join(RESULTS_DIR, "figs"),
 ):
     """
     Plots a given metric for different algorithms using different plot types.
@@ -167,7 +171,12 @@ def plot_metric(
 
 
 def _plot_line(
-    metric_name, data, grid_size, agents, controllers, output_dir="results/figs"
+    metric_name,
+    data,
+    grid_size,
+    agents,
+    controllers,
+    output_dir=os.path.join(RESULTS_DIR, "figs"),
 ):
     plt.style.use("seaborn-v0_8-paper")
     fig, ax = plt.subplots(figsize=(12, 8))
@@ -216,7 +225,12 @@ def _plot_line(
 
 
 def _plot_box(
-    metric_name, data, grid_size, agents, controllers, output_dir="results/figs"
+    metric_name,
+    data,
+    grid_size,
+    agents,
+    controllers,
+    output_dir=os.path.join(RESULTS_DIR, "figs"),
 ):
     plt.style.use("seaborn-v0_8-paper")
     fig, ax = plt.subplots(figsize=(16, 8))
@@ -264,7 +278,7 @@ def _plot_box(
 
 
 # clear summary file
-with open("results/summary.txt", "w") as f:
+with open(os.path.join(RESULTS_DIR, "summary.txt"), "w") as f:
     f.write("Summary of Results\n")
 
 
@@ -408,13 +422,15 @@ for grid_size in grid_sizes:
             # Store result in txt file
             # If it is the first agent config, write over, else append
             mode = "w" if n_agent == n_agents_map[grid_size][0] else "a"
-            with open(f"results/results_{controller}_{grid_size}.txt", mode) as f:
+            with open(
+                os.path.join(RESULTS_DIR, f"results_{controller}_{grid_size}.txt"), mode
+            ) as f:
                 f.write(report_str + "\n")
 
     # Print tables for this grid_size
     agents = n_agents_map[grid_size]
 
-    # with open("results/summary.txt", "a") as f_summary:
+    # with open(os.path.join(RESULTS_DIR, "summary.txt"), "a") as f_summary:
     #     f_summary.write(f"\n\n### GRID SIZE {grid_size} SUMMARY ###\n")
 
     #     # Write simulation settings
@@ -467,7 +483,9 @@ for grid_size in grid_sizes:
                     agent_key
                 ] = agent_data
 
-    with open(f"results/summary_{controller}_{grid_size}.json", "w") as f_json:
+    with open(
+        os.path.join(LOG_DIR, f"summary_{controller}_{grid_size}.json"), "w"
+    ) as f_json:
         # Custom encoder to handle numpy arrays
         class NumpyEncoder(json.JSONEncoder):
             def default(self, o):

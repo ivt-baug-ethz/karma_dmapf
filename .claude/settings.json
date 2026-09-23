@@ -1,0 +1,73 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__plugin_context7_context7__resolve-library-id",
+      "mcp__plugin_context7_context7__query-docs",
+      "mcp__serena__initial_instructions",
+      "mcp__serena__get_symbols_overview",
+      "mcp__serena__find_symbol",
+      "mcp__serena__find_referencing_symbols",
+      "mcp__serena__find_implementations",
+      "mcp__serena__find_declaration",
+      "mcp__serena__list_memories",
+      "mcp__serena__read_memory",
+      "mcp__serena__write_memory",
+      "mcp__serena__edit_memory",
+      "mcp__serena__get_diagnostics_for_file",
+      "Bash(python src_figures/*)",
+      "Bash(./venv/bin/python src_figures/*)",
+      "Bash(black *)",
+      "Bash(./venv/bin/black *)",
+      "Bash(./venv/bin/pylint*)",
+      "Bash(pylint*)",
+      "Bash(pip show*)",
+      "Bash(pip list*)",
+      "Bash(pip freeze*)"
+    ],
+    "deny": [
+      "EnterWorktree",
+      "Bash(git worktree *)",
+      "Bash(git commit*)",
+      "Bash(git commit:*)",
+      "Bash(git stash*)",
+      "Bash(git stash:*)"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/serena-session-start.sh\"",
+            "statusMessage": "Wiring up serena"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/serena-memory-reminder.sh\"",
+            "statusMessage": "Checking serena memories are up to date"
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/pylint-check.sh\"",
+            "statusMessage": "Checking pylint reports no errors"
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/results-regeneration-reminder.sh\"",
+            "statusMessage": "Checking log_files match the code"
+          }
+        ]
+      }
+    ]
+  },
+  "worktree": {
+    "bgIsolation": "none"
+  }
+}

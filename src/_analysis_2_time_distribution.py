@@ -31,7 +31,10 @@ from constants import (
 
 random_seeds = [n for n in range(41, 51)]
 
-os.makedirs("results", exist_ok=True)
+# outputs are anchored at the repository root, independent of the working directory
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+LOG_DIR = os.path.join(ROOT_DIR, "log_files", "analysis_2")
+os.makedirs(LOG_DIR, exist_ok=True)
 
 simulation_settings = {
     "random_seed": 42,
@@ -164,18 +167,20 @@ for seed in random_seeds:
     all_task_times.extend(seed_task_times)
     all_service_times.extend(seed_service_times)
 
-task_times_path = (
-    f"results/all_task_times_{simulation_settings['mapf_control']}_"
-    f"{simulation_settings['grid_size']-2}_{simulation_settings['n_agents']}.txt"
+task_times_path = os.path.join(
+    LOG_DIR,
+    f"all_task_times_{simulation_settings['mapf_control']}_"
+    f"{simulation_settings['grid_size']-2}_{simulation_settings['n_agents']}.txt",
 )
 with open(task_times_path, "w+") as f:
     for time in all_task_times:
         f.write(str(time))
         f.write("\n")
 
-service_times_path = (
-    f"results/all_service_times_{simulation_settings['mapf_control']}_"
-    f"{simulation_settings['grid_size']-2}_{simulation_settings['n_agents']}.txt"
+service_times_path = os.path.join(
+    LOG_DIR,
+    f"all_service_times_{simulation_settings['mapf_control']}_"
+    f"{simulation_settings['grid_size']-2}_{simulation_settings['n_agents']}.txt",
 )
 with open(service_times_path, "w+") as f:
     for time in all_service_times:

@@ -88,6 +88,12 @@ def check_violation(environment, previous_positions=None):
 ###############################################################################
 ###### MAIN ###################################################################
 ###############################################################################
+# outputs are anchored at the repository root, independent of the working directory
+RESULTS_DIR = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "results"
+)
+FRAMES_DIR = os.path.join(RESULTS_DIR, "figures_gifs")
+
 environment = Environment(settings=simulation_settings)
 
 # spawn initial agents
@@ -128,9 +134,10 @@ while environment.time < environment.settings["time_simulation_duration"]:
     closed = environment.close_finished_tasks()
 
     # visualize
-    os.makedirs("figures_gifs", exist_ok=True)
+    os.makedirs(FRAMES_DIR, exist_ok=True)
     plot_environment_and_reservation(
-        environment, save_filename=f"figures_gifs/x_image_{environment.time:04d}.png"
+        environment,
+        save_filename=os.path.join(FRAMES_DIR, f"x_image_{environment.time:04d}.png"),
     )
     check_violation(environment, previous_positions)
 
@@ -138,9 +145,11 @@ while environment.time < environment.settings["time_simulation_duration"]:
     print("\tA-Star Calls:", AStarPathPlanner.get_counter())
     AStarPathPlanner.reset_counter()
 
-os.makedirs("results", exist_ok=True)
+os.makedirs(RESULTS_DIR, exist_ok=True)
 make_gif(
-    input_pattern="figures_gifs/x_image_*.png",
-    output_gif=f"results/animation_{environment.settings['mapf_control']}.gif",
+    input_pattern=os.path.join(FRAMES_DIR, "x_image_*.png"),
+    output_gif=os.path.join(
+        RESULTS_DIR, f"animation_{environment.settings['mapf_control']}.gif"
+    ),
     duration=0.2,
 )

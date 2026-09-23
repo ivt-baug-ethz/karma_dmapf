@@ -5,7 +5,7 @@ targets one grid size and one agent count. It sweeps only the karma influence
 parameter (delta is fixed to 1.0) for four controllers: token-passing, egoistic,
 altruistic, and trip-karma. Seeded runs are parallelized. Results are written
 to a timestamped folder under ``results/`` and aggregated into a single
-``summary.json`` stored both in that folder and in ``src/log_files/analysis_3/summary.json``
+``summary.json`` stored both in that folder and in ``log_files/analysis_3/``
 for downstream plotting (Figure_3).
 """
 
@@ -339,7 +339,7 @@ def main() -> None:
 
     project_root = Path(__file__).resolve().parent.parent
     results_root = project_root / "results"
-    logs_dir = project_root / "src" / "log_files" / "analysis_3"
+    logs_dir = project_root / "log_files" / "analysis_3"
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     out_dir = results_root / f"figure3_karma_influence_{timestamp}"
 

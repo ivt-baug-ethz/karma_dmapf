@@ -2,7 +2,7 @@
 
 This script varies karma influence and delta threshold settings and runs all
 available decentralized policies on a 5x5 grid (with the existing +2 padding).
-Aggregated summaries and figures are written to results/karma_sweep/.
+Aggregated summaries and figures are written to <repo>/results/karma_sweep/.
 """
 
 from __future__ import annotations
@@ -55,7 +55,7 @@ DELTA_THRESHOLDS = [0.5]  # [0.5, 1.5]
 RECOMPUTE_RESULTS = True  # set to False to load cached CSV/JSON and skip reruns
 
 # Output locations
-OUTPUT_DIR = Path("results/karma_sweep")
+OUTPUT_DIR = Path(__file__).resolve().parent.parent / "results" / "karma_sweep"
 FIGS_DIR = OUTPUT_DIR / "figs"
 RUNS_JSON = OUTPUT_DIR / "runs.json"
 SEED_RESULTS_DIR = OUTPUT_DIR / "seed_runs"
