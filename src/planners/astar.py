@@ -74,6 +74,12 @@ class AStarPathPlanner:
     def manhattan(self, a: Tuple[int, int], b: Tuple[int, int]) -> int:
         return abs(a[0] - b[0]) + abs(a[1] - b[1])
 
+    def heuristic(
+        self, a: Tuple[int, int], goal: Tuple[int, int], goal_reached: bool
+    ) -> int:
+        # once the goal was reached, only a free resting cell is searched, at unknown distance
+        return 0 if goal_reached else self.manhattan(a, goal)
+
     def goal_remains_free(
         self,
         goal_state: PathPlannerState,
@@ -125,7 +131,7 @@ class AStarPathPlanner:
                 effective_planning_horizon, reservation_horizon
             )
         open_list: List[Tuple[int, PathPlannerState, List[PathPlannerState]]] = []
-        visited: Set[Tuple[int, int, int, int]] = set()
+        visited: Set[Tuple[int, int, int, int, bool]] = set()
         steps: int = 0
         start_state: PathPlannerState = PathPlannerState(
             start[0], start[1], start[2], 0, "start", (start[0], start[1]) == goal
@@ -145,7 +151,13 @@ class AStarPathPlanner:
                 return None
             # EXPLORE NEW STEP
             f, state, path = heapq.heappop(open_list)
-            key: Tuple[int, int, int, int] = (state.x, state.y, state.theta, state.t)
+            key: Tuple[int, int, int, int, bool] = (
+                state.x,
+                state.y,
+                state.theta,
+                state.t,
+                state.goal_reached,
+            )
             if key in visited:
                 continue
             visited.add(key)
@@ -177,7 +189,8 @@ class AStarPathPlanner:
                 heapq.heappush(
                     open_list,
                     (
-                        next_t + self.manhattan((state.x, state.y), goal),
+                        next_t
+                        + self.heuristic((state.x, state.y), goal, state.goal_reached),
                         PathPlannerState(
                             state.x,
                             state.y,
@@ -198,7 +211,8 @@ class AStarPathPlanner:
                 heapq.heappush(
                     open_list,
                     (
-                        next_t + self.manhattan((state.x, state.y), goal),
+                        next_t
+                        + self.heuristic((state.x, state.y), goal, state.goal_reached),
                         PathPlannerState(
                             state.x,
                             state.y,
@@ -213,7 +227,8 @@ class AStarPathPlanner:
                 heapq.heappush(
                     open_list,
                     (
-                        next_t + self.manhattan((state.x, state.y), goal),
+                        next_t
+                        + self.heuristic((state.x, state.y), goal, state.goal_reached),
                         PathPlannerState(
                             state.x,
                             state.y,
@@ -248,7 +263,8 @@ class AStarPathPlanner:
                         heapq.heappush(
                             open_list,
                             (
-                                next_t + self.manhattan((nx, ny), goal),
+                                next_t
+                                + self.heuristic((nx, ny), goal, state.goal_reached),
                                 PathPlannerState(
                                     nx,
                                     ny,

@@ -106,6 +106,7 @@ class Environment:
     def handle_agents(self) -> None:
         # ROUTE EXECTUION: update agent target and status
         self.handle_agents_route_execution()
+
         # ROUTE PLANNING: for those who need
         if self.settings["mapf_control"] == MAPF_CONTROLLER_CENTRALIZED:
             self.handle_agents_route_planning_centralized()

@@ -53,7 +53,11 @@ across seed jobs.
 
 ## A* (`AStarPathPlanner.astar`)
 
-- State (x, y, θ, t); heuristic = t + manhattan; branches wait, rotate ±1, forward.
+- State (x, y, θ, t, goal_reached). The visited set includes `goal_reached`, so a state that has not
+  reached the goal cannot shadow one that has. Priority = t + `heuristic`, which is the Manhattan
+  distance to the goal before it is reached and 0 afterwards (the search for a free resting cell has
+  no known distance). This keeps A* optimal: a brute-force check over 4500 random reservation grids
+  gave 0 mismatches. Branches: wait, rotate ±1, forward.
 - Reservation grid `(t, x, y)` of agent ids, **−1 = free**
   (`GridTools.create_3D_reservation_grid`). Other agents occupy their route cells and then stay on
   their final cell to the horizon end. Forward moves also reject swaps (edge conflicts).

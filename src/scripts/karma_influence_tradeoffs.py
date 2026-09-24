@@ -2,7 +2,7 @@
 
 This script mirrors the core mechanics of ``karma_influence_sweep.py`` but
 targets one grid size and one agent count. It sweeps only the karma influence
-parameter (delta is fixed to 1.0) for four controllers: token-passing, egoistic,
+parameter (delta is fixed to 0) for four controllers: token-passing, egoistic,
 altruistic, and trip-karma. Seeded runs are parallelized. Results are written
 to a timestamped folder under ``results/runs/`` and aggregated into a single
 ``summary.json`` stored both in that folder and in ``results/karma_influence_tradeoffs/``
