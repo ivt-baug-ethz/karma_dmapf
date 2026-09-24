@@ -337,6 +337,7 @@ class Agent:
         target_candidates.sort(
             key=lambda p: (p[0] - x0) ** 2 + (p[1] - y0) ** 2
         )  # squared distance is enough for ordering[web:19][web:22]
+
         # if some found, check if there is a path to one
         for target_candidate in target_candidates:
             path = self.path_planner.astar(
@@ -383,18 +384,24 @@ class Agent:
             tabu_agent=self,
         )
 
-        # add to_avoid_path to reservation grid
+        # add to_avoid_path to reservation grid, marking only free cells (-1) so that the ids of
+        # other agents stay intact for the swap (edge conflict) check in A*
         for state in to_avoid_path:
-            if state.t < reservation_grid.shape[0]:
-                # mark with this agent's id to block reuse; id is int, -1 means free elsewhere
+            if (
+                state.t < reservation_grid.shape[0]
+                and reservation_grid[state.t][state.x][state.y] == -1
+            ):
                 reservation_grid[state.t][state.x][state.y] = self.id
         last_state = to_avoid_path[-1]
+
         # inifinite remaining on that position after path execution
         for t in range(last_state.t, reservation_grid.shape[0]):
-            reservation_grid[t][last_state.x][last_state.y] = self.id
+            if reservation_grid[t][last_state.x][last_state.y] == -1:
+                reservation_grid[t][last_state.x][last_state.y] = self.id
 
         # if you have a target
         changed_path: Optional[List["PathPlannerState"]] = None
+
         if len(self.target_position) > 0:
             # determine possible, intersection free path
             changed_path = self._determine_intersection_free_path(reservation_grid)
@@ -404,6 +411,7 @@ class Agent:
                 return (changed_cost - current_cost), changed_path
             else:
                 return 1000, changed_path
+
         else:
             # determine if there is any free position nearby to idle parking
             changed_path = self._determine_idle_parking_path(reservation_grid)

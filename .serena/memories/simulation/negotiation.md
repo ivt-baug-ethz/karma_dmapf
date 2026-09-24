@@ -31,7 +31,9 @@ For each non-idle agent i with an empty route and a target:
 3. Prioritise conflicts by i's detour cost if it had to avoid that agent (`prioritize_conflicts`,
    Eq. 1), and take the costliest.
 4. Both sides compute `determine_cost_to_change`: Δ = (length of the alternative route that avoids
-   the other's path, incl. resting on its end cell) − current route length. The value is **1000** if
+   the other's path, incl. resting on its end cell) − current route length. The avoided path is
+   written into the reservation grid **only in free cells**. Overwriting the ids of other agents would
+   break A*'s swap check, which needs the same id on both cells, and would let edge conflicts through. The value is **1000** if
    there is no alternative or the agent has no target (idle agents get a parking path instead).
 5. `negotiation_function(cost_other, cost_mine[, agents, params_karma])` returns **True = the other
    (conflicting) agent replans**. Then the other agent adopts its alternative path immediately.
