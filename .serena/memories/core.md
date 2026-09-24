@@ -23,6 +23,7 @@ Not a library: there is no `pyproject.toml` / `setup.py`, nothing is installed, 
 | `src/planners/assignment.py` | Hungarian agent↔task assignment (`scipy.optimize.linear_sum_assignment`) |
 | `src/scripts/` | entry points: the four analyses and the legacy sweep (`mem:analysis_and_figures`), `visualize_simulation` (GIF rendering) and `performance_tracking` (quick 10-seed printout) |
 | `figures/Figure_N.py` | paper figures, rendered from `results/<analysis>/` to `figures/Figure_N.png`; CI renders them |
+| `figures/paper_style.py` | the shared controller colours, markers and hatches (colour-blind and greyscale safe) |
 | `results/<analysis>/` | committed analysis outputs, i.e. the figure inputs; one folder per analysis script, named after it |
 | `results/animations/` | committed README GIFs; `visualize_simulation` writes here |
 | `results/runs/` | git-ignored; every script's automatic intermediate output (per-seed JSONs, txt reports, GIF frames, sweep cache) |

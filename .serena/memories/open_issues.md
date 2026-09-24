@@ -30,3 +30,13 @@ them must not add them to any analysis or figure.
   invocation (`mem:analysis_and_figures`).
 - The TRIP_KARMA reset compares `settings["mapf_control"]` with a string literal instead of
   `MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_TRIP_KARMA`.
+- `Figure_4` (supplementary): the long metric names used as y-labels overlap between its stacked
+  subplots. This is a layout issue, not a styling one.
+
+## Paper text vs figure style (outside this repo)
+
+The figures use a colour-blind and greyscale safe style (`figures/paper_style.py`,
+`mem:simulation/negotiation`). The LaTeX sources are not in this repo, so their captions and body
+text have not been checked for references to colour names from an earlier palette ("red",
+"green", "blue", "olive"). The authors must check the `.tex` by hand and make one real
+black-and-white print of the compiled PDF.

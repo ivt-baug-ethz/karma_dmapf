@@ -20,6 +20,8 @@ from typing import Any, Dict, List
 
 import pandas as pd
 
+from paper_style import CONTROLLER_COLORS, CONTROLLER_MARKERS
+
 FOLDER = (
     Path(__file__).resolve().parent.parent / "results" / "karma_influence_tradeoffs"
 )
@@ -44,13 +46,6 @@ CONTROLLER_LABELS = {
     "DECENTRALIZED_NEGOTIATE_EGOISTIC": "Egoistic",
     "DECENTRALIZED_NEGOTIATE_ALTRUISTIC": "Altruistic",
     "DECENTRALIZED_NEGOTIATE_TRIP_KARMA": "Karma",
-}
-
-CONTROLLER_COLORS = {
-    "DECENTRALIZED_TOKEN_PASSING": "dodgerblue",
-    "DECENTRALIZED_NEGOTIATE_EGOISTIC": "olive",
-    "DECENTRALIZED_NEGOTIATE_ALTRUISTIC": "green",
-    "DECENTRALIZED_NEGOTIATE_TRIP_KARMA": "red",
 }
 
 
@@ -83,7 +78,7 @@ def _plot_metric(
             subset["mean"],
             label=label,
             color=color,
-            marker="o",
+            marker=CONTROLLER_MARKERS[controller],
             linewidth=1.5,
             markersize=4,
         )
@@ -143,6 +138,7 @@ def plot_tradeoffs(
         )
 
         plt.tight_layout(rect=(0.0, 0.05, 1.0, 1.0))
+        fig.align_ylabels()
         safe_metric = metric.replace(" ", "_").replace("%", "perc").replace("/", "-")
 
         out_dir = Path(output_dir)

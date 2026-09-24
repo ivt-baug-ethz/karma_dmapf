@@ -50,8 +50,13 @@ error messages, same import order. Deviating "because it is cleaner" is a defect
   `src/scripts/` command that produces them and the constants to set per run.
 - Module-level data folder and style constants, `main(output_dir, show)`, and argparse
   `--output-dir/-o` plus `--no-show`. They switch to Agg when headless.
-- The label and colour for each controller are fixed (`mem:simulation/negotiation`). Reuse them
-  verbatim.
+- The label for each controller is fixed (`mem:simulation/negotiation`); reuse it verbatim. Colour,
+  marker and hatch come only from `figures/paper_style.py` (`from paper_style import ...`,
+  which resolves because the scripts run as `python figures/Figure_N.py`). Every series needs a
+  non-colour cue (a marker on lines, a hatch on boxes) so it survives greyscale printing. Lines
+  all stay solid; do not add per-controller dash patterns.
+- Figures with y-labels on stacked panels call `fig.align_ylabels()` after the layout step
+  (`subplots_adjust` / `tight_layout`), so the labels line up despite different tick widths.
 - A new figure script must also be added to `.github/workflows/figure-plots.yml`.
 
 ## Comments

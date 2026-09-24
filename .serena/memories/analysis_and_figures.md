@@ -52,6 +52,10 @@ efficiency_benchmark JSON: `{grid: {CTRL: {n_agents: {metric: [mean, std, median
 - Figure_1: a 3×4 grid (rows: grids 5/10/15; cols: completed tasks, A* calls, avg task time, avg
   service time). It smooths with a centred rolling median (window 3) and multiplies completed tasks
   and A* calls by the hard-coded per-grid `scale_factors`. Keep these unless told otherwise.
+- All four share `figures/paper_style.py` for the controller styles (`mem:conventions`).
+  The before/after evidence for that style (colour-blindness and greyscale previews, the raw
+  renders, `palette_report.txt`) is kept in the git-ignored `results/archive/a11y_showcase/`. The
+  script that produced it is deliberately not in the repo.
 - CI (`figure-plots.yml`) renders all four and asserts `Figure_1..3.png` plus at least one
   `Figure_tradeoff_*.png`.
 

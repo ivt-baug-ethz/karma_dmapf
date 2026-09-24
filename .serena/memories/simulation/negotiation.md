@@ -12,8 +12,15 @@
 | `DECENTRALIZED_NEGOTIATE_EGOISTIC2` / `ALTRUISTIC2` | – | egoistic/altruistic on the relative-deviation cost transform | no (ALTRUISTIC2 only in analysis_2 logs + legacy sweep) |
 | `CENTRALIZED` | CBS (§II-B only) | `Planner_CBS` (`mem:simulation/core`) | no |
 
-The figures use a fixed label and colour for each paper controller: Token Passing `dodgerblue`,
-Egoistic `olive`, Altruistic `green`, Karma `red`. Keep them identical across `figures/`. The
+The figures use a fixed label and style for each paper controller. Colours (Okabe-Ito) plus
+marker / hatch live in `figures/paper_style.py`: Token Passing black `#000000` `D` `xxx`, Egoistic
+blue `#0072B2` `^` `\\\`, Altruistic green `#009E73` `s` `///`, Karma orange `#D55E00` `o` no
+hatch. Karma is orange on purpose, so it is the most visible series; the authors chose this over
+alternatives (Tol muted, Tol high-contrast) compared side by side. Trade-off they accepted: in
+greyscale, Token Passing (black) is the darkest series, and Karma and Altruistic are similar
+mid-greys that only their markers (circle vs square) separate. All lines stay solid (a deliberate choice: mixed dash patterns looked
+inconsistent). The set is colour-blind safe (AAMAS rule), and the markers and hatches keep it
+readable in greyscale. Keep them identical across `figures/`. The
 old name `DECENTRALIZED_RESPECT` (still in some archived run files) is token passing.
 
 ## Negotiation protocol (`handle_agents_route_planning_decentralized_negotiate`, paper Alg. 1)
