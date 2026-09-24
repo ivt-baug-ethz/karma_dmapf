@@ -33,8 +33,12 @@ For each non-idle agent i with an empty route and a target:
 4. Both sides compute `determine_cost_to_change`: Δ = (length of the alternative route that avoids
    the other's path, incl. resting on its end cell) − current route length. The avoided path is
    written into the reservation grid **only in free cells**. Overwriting the ids of other agents would
-   break A*'s swap check, which needs the same id on both cells, and would let edge conflicts through. The value is **1000** if
-   there is no alternative or the agent has no target (idle agents get a parking path instead).
+   break A*'s swap check, which needs the same id on both cells, and would let edge conflicts through. 
+   - No alternative: `COST_TO_CHANGE_INFEASIBLE` (`inf`, `constants.py`).
+   - Idle agent: Δ is its **real parking detour**, or `inf` without a parking path.
+   - `Environment.make_decision` passes `inf` for an idle other agent to the rules without agent
+     parameters. Egoistic, altruistic and `*2` therefore behave exactly as with the former `1000`
+     (verified task-by-task identical).
 5. `negotiation_function(cost_other, cost_mine[, agents, params_karma])` returns **True = the other
    (conflicting) agent replans**. Then the other agent adopts its alternative path immediately.
    Otherwise the other agent is added to `considered`. If the other agent has no alternative path,
@@ -47,12 +51,25 @@ For each non-idle agent i with an empty route and a target:
 ## Karma (`NegotiationStrategy.negotiate_karma`)
 
 - Adjusted cost = Δ + τ·k, where τ = `params_karma["karma_influence"]` and k = `agent.karma_balance`
-  (int, starts at `initial_karma` = 0).
-- `adj_mine − adj_other > delta_threshold` → other replans; `<` → self replans; `==` → random.
+  (int, starts at `initial_karma` = **20** in every script; trip Karma resets to it).
+- Forced decisions come first and skip the karma comparison:
+  - Δ_mine = `inf` (i cannot avoid j) → j gives way. An idle j steps aside to its parking cell.
+  - j idle and Δ_mine finite → i gives way. An idle agent has no task to delay and does not give way.
+- Otherwise: `adj_mine − adj_other > delta_threshold` → other replans; `<` → self replans; `==` → random.
   `delta_threshold` is **not in the paper**. All committed runs use 0, which is exactly Eq. 5
   (τ = 0 ≡ altruistic). A non-zero value makes the rule asymmetric.
 - Payment (`_karma_payment_rule`, rule 3 = paper Eq. 6): the replanner receives its own Δ and the
-  winner pays the same amount (zero-sum, pay-to-peer). A high balance therefore makes an agent less
+  winner pays the same amount (zero-sum, pay-to-peer).
+  - The payment is `max(0, Δ_yielder)`, so it is never negative.
+  - It is also limited to the payer's balance, so **balances never become negative**.
+  - The yielder's Δ is always finite: forced yielders reached the decision with an alternative. So an
+    `inf` bid can never be lost or paid.
+  - In the case `inf` vs idle, the idle agent is paid its real parking detour.
+  - When the initiating agent i gives way, it does not adopt the alternative whose length it bid. It
+    adds j to `considered` and replans its shortest path around j, so the payment is the *estimated*
+    detour. When j gives way, it adopts exactly the alternative it bid (`change_path_to_satisfy`).
+  - Without a reset, balances stay bounded (10×10/30, T = 200: 0..55 instead of ±990) and their sum
+    stays 20·n. With the trip reset the sum is not conserved. A high balance therefore makes an agent less
   likely to replan next time. Rules 1/2/4 are commented-out alternatives; rule 1 needs
   `params_karma["karma_payment"]` (present only in the legacy sweep settings).
 - The per-trip reset happens in `Agent.assign_task` / `Agent.update_target_position` at pickup, keyed

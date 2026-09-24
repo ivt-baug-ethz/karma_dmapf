@@ -23,7 +23,10 @@ from src.simulation.constants import (
     AGENT_ORIENTATION_EAST,
     AGENT_ORIENTATION_WEST,
 )
-from src.simulation.constants import IDLING_NEIGHBORHOOD_SEARCH_RANGE
+from src.simulation.constants import (
+    COST_TO_CHANGE_INFEASIBLE,
+    IDLING_NEIGHBORHOOD_SEARCH_RANGE,
+)
 from src.simulation.geometry import GridTools
 
 
@@ -373,7 +376,7 @@ class Agent:
 
     def determine_cost_to_change(
         self, to_avoid_path: List["PathPlannerState"]
-    ) -> Tuple[int, Optional[List["PathPlannerState"]]]:
+    ) -> Tuple[float, Optional[List["PathPlannerState"]]]:
         current_cost = len(self.route)
 
         # determine reservation_grid given all already planned routes
@@ -410,12 +413,17 @@ class Agent:
                 changed_cost = len(changed_route if changed_route else [])
                 return (changed_cost - current_cost), changed_path
             else:
-                return 1000, changed_path
+                return COST_TO_CHANGE_INFEASIBLE, changed_path
 
         else:
             # determine if there is any free position nearby to idle parking
             changed_path = self._determine_idle_parking_path(reservation_grid)
-            return 1000, changed_path
+            if changed_path is not None:
+                parking_route = self.path_planner.convert_path_to_route(changed_path)
+                parking_cost = len(parking_route if parking_route else [])
+                return (parking_cost - current_cost), changed_path
+            else:
+                return COST_TO_CHANGE_INFEASIBLE, changed_path
 
     def change_path_to_satisfy(self, change_to_path: List["PathPlannerState"]) -> None:
         alternative_route = self.path_planner.convert_path_to_route(change_to_path)

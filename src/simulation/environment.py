@@ -6,6 +6,7 @@ if TYPE_CHECKING:
 
 import numpy as np
 from src.simulation.constants import (
+    COST_TO_CHANGE_INFEASIBLE,
     MAPF_CONTROLLER_CENTRALIZED,
     MAPF_CONTROLLER_DECENTRALIZED_TOKEN_PASSING,
     MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_EGOISTIC,
@@ -370,6 +371,10 @@ class Environment:
                 self.settings["params_karma"],
             )
         else:
+            # idle agents do not give way under the rules without agent parameters
+            if conflicting_agent.is_idle():
+                cost_other = COST_TO_CHANGE_INFEASIBLE
+
             agreement_to_solve_conflict = negotiation_function(cost_other, cost_mine)
         return agreement_to_solve_conflict
 

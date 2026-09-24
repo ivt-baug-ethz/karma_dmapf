@@ -59,7 +59,7 @@ simulation_settings = {
         "PLANNING_HORIZON": 100,
     },
     "params_karma": {
-        "initial_karma": 0,
+        "initial_karma": 20,
         "delta_threshold": 0,
         "karma_influence": 0.5,
     },
@@ -130,6 +130,9 @@ def run_single_seed(seed):
         }
         environment.handle_agents()
 
+        # release agents that delivered, so that they can get a new task in this step
+        environment.close_finished_tasks()
+
         # Uncomment for conflict debugging if needed.
         # check_violation(environment, previous_positions)
 
@@ -140,7 +143,6 @@ def run_single_seed(seed):
                 break
 
         environment.assign_open_tasks()
-        environment.close_finished_tasks()
 
         print("\tA-Star Calls:", AStarPathPlanner.get_counter())
         AStarPathPlanner.reset_counter()

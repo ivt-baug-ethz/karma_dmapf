@@ -71,7 +71,7 @@ base_simulation_settings = {
         "PLANNING_HORIZON": 100,
     },
     "params_karma": {
-        "initial_karma": 0,
+        "initial_karma": 20,
         "delta_threshold": 0,
         "karma_influence": 0.5,
     },
@@ -315,6 +315,9 @@ def run_single_seed(simulation_settings):
         environment.time += 1
         environment.handle_agents()
 
+        # release agents that delivered, so that they can get a new task in this step
+        environment.close_finished_tasks()
+
         while len(environment.tasks) < len(environment.agents):
             old_len = len(environment.tasks)
             environment.spawn_task()
@@ -322,7 +325,6 @@ def run_single_seed(simulation_settings):
                 break
 
         environment.assign_open_tasks()
-        environment.close_finished_tasks()
 
         n_astar_calls += AStarPathPlanner.get_counter()
         AStarPathPlanner.reset_counter()

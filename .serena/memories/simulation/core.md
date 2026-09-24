@@ -7,15 +7,19 @@ env = Environment(settings); spawn_agent() × n_agents; spawn_task() × n_agents
 while env.time < T:
     env.time += 1
     env.handle_agents()                 # execute one route step, then plan (per controller)
+    env.close_finished_tasks()          # release delivering agents before assignment
     top up: spawn_task() until len(tasks) == len(agents) or a spawn fails
     env.assign_open_tasks()
-    env.close_finished_tasks()
     n_astar += AStarPathPlanner.get_counter(); AStarPathPlanner.reset_counter()
 ```
 
 `performance_tracking` spawns at most one task per step (`if`, not `while`);
 every other script tops up. A change to the loop must be repeated in each script
-(`mem:open_issues`).
+(`mem:open_issues`). Releasing before assigning lets a delivering agent get a new task in the same
+step. With the opposite order, every delivery cost at least one idle step: idle time was about 12%
+of agent-steps, now it is about 6%. Most of the remaining idle time comes from the assignment
+reserving open tasks for CARRY agents. A task backlog (#tasks > #agents) would remove it, but it
+was only evaluated (`TO_FIX.md`).
 
 ## Settings dict (`Environment.settings`)
 

@@ -48,7 +48,7 @@ simulation_settings = {
         "PLANNING_HORIZON": 100,
     },
     "params_karma": {
-        "initial_karma": 0,
+        "initial_karma": 20,
         "delta_threshold": 0,
         "karma_influence": 0.5,
     },
@@ -70,12 +70,15 @@ for random_seed in range(41, 51):
     n_astar_calls = 0
     print("Starting Experiment", random_seed)
     environment = Environment(settings=simulation_settings)
+
     # spawn initial agents
     for n in range(0, simulation_settings["n_agents"]):
         environment.spawn_agent()
+
     # spawn initial tasks
     for n in range(0, simulation_settings["n_agents"]):
         environment.spawn_task()
+
     # simulation loop
     while environment.time < environment.settings["time_simulation_duration"]:
         print(
@@ -86,16 +89,23 @@ for random_seed in range(41, 51):
             "\t| tasks:",
             len(environment.tasks),
         )
+
         # general update
         environment.time += 1
+
         # handle agents
         environment.handle_agents()
+
+        # release agents that delivered, so that they can get a new task in this step
+        closed = environment.close_finished_tasks()
+
         # # spawn tasks randomly
         if len(environment.tasks) < len(environment.agents):
             environment.spawn_task()
+
         # handle tasks
         environment.assign_open_tasks()
-        closed = environment.close_finished_tasks()
+
         # report A-STAR Calls
         n_astar_calls += AStarPathPlanner.get_counter()
         AStarPathPlanner.reset_counter()

@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Optional
 import numpy as np
+from src.simulation.constants import COST_TO_CHANGE_INFEASIBLE
 
 if TYPE_CHECKING:
     from src.simulation.agent import Agent
@@ -39,8 +40,8 @@ class NegotiationStrategy:
 
     @staticmethod
     def _karma_payment_rule(
-        cost_mine: int, cost_other: int, other_resolves_conflict: bool, karma_params
-    ) -> int:
+        cost_mine: float, cost_other: float, other_resolves_conflict: bool, karma_params
+    ) -> float:
         # RULE 1: fixed payment
         # payment = karma_params["karma_payment"]
 
@@ -53,7 +54,8 @@ class NegotiationStrategy:
         # )
 
         # RULE 3: loser has to avoid collision, winner pays the collision avoidance effort of the loser
-        payment = cost_other if other_resolves_conflict else cost_mine
+        # (never negative, e.g. when the avoiding route drops waits of the old one)
+        payment = max(0, cost_other if other_resolves_conflict else cost_mine)
 
         # RULE 4: loser has to avoid collision, winner pays the collision avoidance effort they saved through this
         # payment = cost_mine if other_resolves_conflict else cost_other
@@ -62,8 +64,8 @@ class NegotiationStrategy:
 
     @staticmethod
     def negotiate_karma(
-        cost_other: int,
-        cost_mine: int,
+        cost_other: float,
+        cost_mine: float,
         agent_other: Agent,
         agent_self: Agent,
         karma_params,
@@ -79,7 +81,14 @@ class NegotiationStrategy:
             cost_mine + karma_params["karma_influence"] * agent_self.karma_balance
         )
 
-        if cost_mine_adjusted - cost_other_adjusted > karma_params["delta_threshold"]:
+        if cost_mine == COST_TO_CHANGE_INFEASIBLE:
+            # this agent cannot avoid the other agent, so the other agent has to resolve the conflict
+            # (an idle other agent steps aside to its parking position)
+            other_resolves_conflict = True
+        elif agent_other.is_idle():
+            # an idle agent has no task to be delayed and does not give way, so this agent has to resolve the conflict
+            other_resolves_conflict = False
+        elif cost_mine_adjusted - cost_other_adjusted > karma_params["delta_threshold"]:
             # if the agent's own cost is sufficiently higher than the other agent's cost, the other agent has to resolve the conflict
             other_resolves_conflict = True
         elif cost_mine_adjusted - cost_other_adjusted < karma_params["delta_threshold"]:
@@ -112,6 +121,15 @@ class NegotiationStrategy:
             cost_other,
             other_resolves_conflict=other_resolves_conflict,
             karma_params=karma_params,
+        )
+        # karma balances never become negative, so the winner pays at most its balance
+        payment = min(
+            payment,
+            (
+                agent_self.karma_balance
+                if other_resolves_conflict
+                else agent_other.karma_balance
+            ),
         )
         if other_resolves_conflict:
             agent_self.karma_balance -= payment

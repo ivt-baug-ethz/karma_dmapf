@@ -22,6 +22,10 @@ SPAWN_OCCUPIED_CELLS_BORDER = 0
 
 IDLING_NEIGHBORHOOD_SEARCH_RANGE = 2
 
+# cost to change of an agent that cannot avoid the other agent
+# (or is idle, in the decision rules)
+COST_TO_CHANGE_INFEASIBLE = float("inf")
+
 DIRS = [(0, 1), (1, 0), (0, -1), (-1, 0)]  # N,E,S,W
 DIR_NAMES = ["N", "E", "S", "W"]
 

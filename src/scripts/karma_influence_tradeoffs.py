@@ -79,7 +79,7 @@ BASE_SIMULATION_SETTINGS: Dict[str, Any] = {
         "PLANNING_HORIZON": 100,
     },
     "params_karma": {
-        "initial_karma": 0,
+        "initial_karma": 20,
         "delta_threshold": DELTA_THRESHOLD,
         "karma_influence": 0.5,
     },
@@ -133,13 +133,15 @@ def run_single_simulation(simulation_settings: Dict[str, Any]) -> Dict[str, floa
     ):
         env.time += 1
         env.handle_agents()
+
+        # release agents that delivered, so that they can get a new task in this step
+        env.close_finished_tasks()
         while len(env.tasks) < len(env.agents):
             prev_len = len(env.tasks)
             env.spawn_task()
             if prev_len == len(env.tasks):
                 break
         env.assign_open_tasks()
-        env.close_finished_tasks()
         n_astar_calls += AStarPathPlanner.get_counter()
         AStarPathPlanner.reset_counter()
 

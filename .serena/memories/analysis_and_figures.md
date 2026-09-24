@@ -73,6 +73,19 @@ efficiency_benchmark JSON: `{grid: {CTRL: {n_agents: {metric: [mean, std, median
 
 ## Key paper findings (for sanity-checking regenerated data)
 
+**The committed `results/` and the numbers below predate these simulation fixes:**
+- swap detection in `determine_cost_to_change`
+- pickups registered on pass-over
+- A* optimality
+- the step order (release before assign)
+- the karma rule with `inf` bids, payments clipped at 0 and limited to the payer's balance, and
+  `initial_karma` = 20
+
+Regenerated data will differ: throughput is higher (about +5–15% completions from the fixes so far),
+and every negotiation controller is affected. Some committed files also do not reproduce from any code
+version (`TO_FIX.md` item 1). So use the numbers below only as a rough orientation, not as exact
+targets.
+
 - **Token passing**: fewest A* calls, fewest completed tasks, longest service time. At 15×15/80 it
   completes about 1.9k tasks with about 3k A* calls.
 - **Egoistic**: the most A* calls (about 67k at 15×15/80) and the most completions.

@@ -51,7 +51,7 @@ simulation_settings = {
         "PLANNING_HORIZON": 100,
     },
     "params_karma": {
-        "initial_karma": 0,
+        "initial_karma": 20,
         "delta_threshold": 0,
         "karma_influence": 0.5,
     },
@@ -124,6 +124,9 @@ while environment.time < environment.settings["time_simulation_duration"]:
     previous_positions = {a.id: list(a.current_position) for a in environment.agents}
     environment.handle_agents()
 
+    # release agents that delivered, so that they can get a new task in this step
+    closed = environment.close_finished_tasks()
+
     # # spawn tasks randomly
     while len(environment.tasks) < len(environment.agents):
         n = len(environment.tasks)
@@ -133,7 +136,6 @@ while environment.time < environment.settings["time_simulation_duration"]:
 
     # handle tasks
     environment.assign_open_tasks()
-    closed = environment.close_finished_tasks()
 
     # visualize
     os.makedirs(FRAMES_DIR, exist_ok=True)
