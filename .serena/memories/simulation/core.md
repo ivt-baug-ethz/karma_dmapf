@@ -36,6 +36,12 @@ across seed jobs.
 - `assign_open_tasks` considers idle **and** CARRY agents (available soon), but only idle agents get
   the task this step. Cost = arrival time − 0.2·wait time (`alpha`), with the arrival estimated via
   `Geometry.travel_time_with_rotation`.
+- The pickup is registered as soon as a `PICKUP` agent stands on `from_position`, also in the
+  middle of a route. A* routes may pass over the goal and continue to a cell where the agent can
+  rest. The agent keeps that already-reserved route, because other agents planned around it, and
+  replans towards the delivery once it ends
+  (`Environment.handle_agents_route_execution`). Dropping the route instead caused vertex conflicts
+  when the replan failed.
 - On pickup, `task.pickup_time` is set and `minimum_task_time` becomes the unobstructed A* time
   pickup→delivery (from the current orientation). For `TRIP_KARMA` the agent's karma is reset
   (`mem:simulation/negotiation`). `minimal_path_cost` (agent→pickup→delivery, unobstructed) is set on

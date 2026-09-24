@@ -164,7 +164,11 @@ class Environment:
     def handle_agents_route_execution(self) -> None:
         for agent in self.agents:
             agent.execute_route()
-            if len(agent.route) == 0 and not agent.is_idle():
+
+            # an agent passing over its pickup cell picks up there and keeps its reserved route
+            if not agent.is_idle() and (
+                len(agent.route) == 0 or agent.current_position == agent.target_position
+            ):
                 agent.update_target_position(self.time)
 
     def print_debug_log(self) -> None:
