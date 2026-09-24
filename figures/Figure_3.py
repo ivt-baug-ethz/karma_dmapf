@@ -19,6 +19,8 @@ from pathlib import Path
 
 import pandas as pd
 
+from paper_style import CONTROLLER_COLORS, CONTROLLER_MARKERS
+
 folder = Path(__file__).resolve().parent.parent / "results" / "karma_influence"
 FIGURE_WIDTH = 6.0 * 2
 FIGURE_HEIGHT = 3.0
@@ -35,14 +37,6 @@ CONTROLLER_LABELS = {
     "DECENTRALIZED_NEGOTIATE_EGOISTIC": "Egoistic",
     "DECENTRALIZED_NEGOTIATE_ALTRUISTIC": "Altruistic",
     "DECENTRALIZED_NEGOTIATE_TRIP_KARMA": "Karma",
-}
-
-# Match Figure_2 palette
-CONTROLLER_COLORS = {
-    "DECENTRALIZED_TOKEN_PASSING": "dodgerblue",
-    "DECENTRALIZED_NEGOTIATE_EGOISTIC": "olive",
-    "DECENTRALIZED_NEGOTIATE_ALTRUISTIC": "green",
-    "DECENTRALIZED_NEGOTIATE_TRIP_KARMA": "red",
 }
 
 
@@ -92,9 +86,8 @@ def plot_influences(
                 subset["mean"],
                 label=label,
                 color=color,
-                # marker="o",
-                # linewidth=1.5,
-                # markersize=4,
+                marker=CONTROLLER_MARKERS[controller],
+                markersize=4,
             )
             if "std" in subset.columns:
                 ax.fill_between(

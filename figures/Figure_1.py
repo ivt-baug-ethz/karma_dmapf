@@ -20,16 +20,18 @@ import pandas as pd
 import matplotlib
 import matplotlib.pyplot as plt
 
+from paper_style import CONTROLLER_COLORS, CONTROLLER_MARKERS
+
 # Constants / data paths
 folder = Path(__file__).resolve().parent.parent / "results" / "efficiency_benchmark"
 FIGURE_WIDTH = 6.0 * 2
 FIGURE_HEIGHT = 5.0
 
 controllers = [
-    ("DECENTRALIZED_TOKEN_PASSING", "Token Passing", "dodgerblue"),
-    ("DECENTRALIZED_NEGOTIATE_EGOISTIC", "Egoistic", "olive"),
-    ("DECENTRALIZED_NEGOTIATE_ALTRUISTIC", "Altruistic", "green"),
-    ("DECENTRALIZED_NEGOTIATE_TRIP_KARMA", "Karma", "red"),
+    ("DECENTRALIZED_TOKEN_PASSING", "Token Passing"),
+    ("DECENTRALIZED_NEGOTIATE_EGOISTIC", "Egoistic"),
+    ("DECENTRALIZED_NEGOTIATE_ALTRUISTIC", "Altruistic"),
+    ("DECENTRALIZED_NEGOTIATE_TRIP_KARMA", "Karma"),
 ]
 
 grid_sizes = ["5", "10", "15"]
@@ -92,7 +94,7 @@ def build_plot_data():
             factor = scale_factors[grid_size][measure_idx]
             controller_dfs = [
                 load_data(grid_size, controller_name, measure, factor)
-                for controller_name, _, _ in controllers
+                for controller_name, _ in controllers
             ]
             plot_data[grid_size].append(controller_dfs)
     return plot_data
@@ -109,12 +111,15 @@ def plot_subplot(ax, controller_dfs, title=None, ylabel=None, show_legend=False)
     ax.set_xlim(controller_dfs[0]["n"].min(), controller_dfs[0]["n"].max())
     ax.margins(x=0)
 
-    for controller_df, (_, label, color) in zip(controller_dfs, controllers):
+    for controller_df, (controller_name, label) in zip(controller_dfs, controllers):
+        color = CONTROLLER_COLORS[controller_name]
         ax.plot(
             controller_df["n"],
             controller_df["mean"],
             label=label,
             color=color,
+            marker=CONTROLLER_MARKERS[controller_name],
+            markersize=4,
         )
         ax.fill_between(
             controller_df["n"],
@@ -153,6 +158,8 @@ def main(
     plt.subplots_adjust(
         top=0.950, bottom=0.090, left=0.060, right=0.990, hspace=0.400, wspace=0.230
     )
+
+    fig.align_ylabels()
 
     out_dir = Path(output_dir)
     out_dir.mkdir(parents=True, exist_ok=True)

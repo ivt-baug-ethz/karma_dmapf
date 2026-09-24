@@ -12,8 +12,12 @@
 | `DECENTRALIZED_NEGOTIATE_EGOISTIC2` / `ALTRUISTIC2` | – | egoistic/altruistic on the relative-deviation cost transform | no (ALTRUISTIC2 only in analysis_2 logs + legacy sweep) |
 | `CENTRALIZED` | CBS (§II-B only) | `Planner_CBS` (`mem:simulation/core`) | no |
 
-The figures use a fixed label and colour for each paper controller: Token Passing `dodgerblue`,
-Egoistic `olive`, Altruistic `green`, Karma `red`. Keep them identical across `figures/`. The
+The figures use a fixed label and style for each paper controller. Colours (Paul Tol muted) plus
+marker / hatch live in `figures/paper_style.py`: Token Passing rose `#CC6677` `D` `xxx`, Egoistic
+green `#117733` `^` `\\\`, Altruistic olive `#999933` `s` `///`, Karma indigo `#332288` `o` no
+hatch (darkest). All lines stay solid (a deliberate choice: mixed dash patterns looked
+inconsistent). The set is colour-blind safe (AAMAS rule), and the markers and hatches keep it
+readable in greyscale. Keep them identical across `figures/`. The
 old name `DECENTRALIZED_RESPECT` (still in some archived run files) is token passing.
 
 ## Negotiation protocol (`handle_agents_route_planning_decentralized_negotiate`, paper Alg. 1)

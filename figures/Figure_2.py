@@ -16,7 +16,10 @@ from pathlib import Path
 
 import matplotlib
 import matplotlib.pyplot as plt
+from matplotlib.colors import to_rgba
 from matplotlib.patches import Patch
+
+from paper_style import CONTROLLER_COLORS, CONTROLLER_HATCHES, CONTROLLER_MARKERS
 
 folder = Path(__file__).resolve().parent.parent / "results" / "time_distribution"
 FIGURE_WIDTH = 6.0
@@ -36,12 +39,9 @@ controller_labels = [
     "Karma",
 ]
 
-controller_colors = [
-    "dodgerblue",
-    "olive",
-    "green",
-    "red",
-]
+controller_colors = [CONTROLLER_COLORS[name] for name in controller_file_names]
+controller_hatches = [CONTROLLER_HATCHES[name] for name in controller_file_names]
+controller_markers = [CONTROLLER_MARKERS[name] for name in controller_file_names]
 
 
 def load_time_values(ftype, controller, grid_size, n_agents):
@@ -64,17 +64,15 @@ def load_grid_data(grid_size, n_agents):
     }
 
 
-def style_boxplot(boxplot, colors, face_mode):
-    for patch, color in zip(boxplot["boxes"], colors):
+def style_boxplot(boxplot, colors, hatches, markers, face_mode):
+    for patch, color, hatch in zip(boxplot["boxes"], colors, hatches):
         patch.set_edgecolor(color)
         patch.set_linewidth(1.5)
+        patch.set_hatch(hatch)
         if face_mode == "filled":
-            patch.set_facecolor(color)
-            patch.set_alpha(0.45)
+            patch.set_facecolor(to_rgba(color, 0.45))
         else:
             patch.set_facecolor("white")
-            patch.set_alpha(1.0)
-            patch.set_hatch("///")
 
     for whisker, color in zip(
         boxplot["whiskers"], [color for color in colors for _ in range(2)]
@@ -84,10 +82,12 @@ def style_boxplot(boxplot, colors, face_mode):
         boxplot["caps"], [color for color in colors for _ in range(2)]
     ):
         cap.set_color(color)
-    for median, color in zip(boxplot["medians"], colors):
-        median.set_color(color)
+    # dark medians stay visible against hatch lines in the box colour
+    for median in boxplot["medians"]:
+        median.set_color("#222222")
         median.set_linewidth(1.5)
-    for flier, color in zip(boxplot["fliers"], colors):
+    for flier, color, marker in zip(boxplot["fliers"], colors, markers):
+        flier.set_marker(marker)
         flier.set_markeredgecolor(color)
         # flier.set_markerfacecolor(color)
         flier.set_alpha(0.7)
@@ -116,8 +116,16 @@ def plot_paired_boxplots(
         manage_ticks=False,
     )
 
-    style_boxplot(task_boxplot, controller_colors, "hatched")
-    style_boxplot(service_boxplot, controller_colors, "filled")
+    style_boxplot(
+        task_boxplot, controller_colors, controller_hatches, controller_markers, "open"
+    )
+    style_boxplot(
+        service_boxplot,
+        controller_colors,
+        controller_hatches,
+        controller_markers,
+        "filled",
+    )
 
     ax.set_ylabel(grid_label, fontweight="bold")
     ax.set_xticks(distribution_positions)
@@ -162,8 +170,10 @@ def main(
     )
 
     legend_handles = [
-        Patch(facecolor=color, edgecolor=color, alpha=0.45, label=label)
-        for color, label in zip(controller_colors, controller_labels)
+        Patch(facecolor=to_rgba(color, 0.45), edgecolor=color, hatch=hatch, label=label)
+        for color, hatch, label in zip(
+            controller_colors, controller_hatches, controller_labels
+        )
     ]
     fig.legend(
         handles=legend_handles,
@@ -174,6 +184,7 @@ def main(
     )
 
     plt.tight_layout(rect=(0.0, 0.05, 1.0, 1.0))
+    fig.align_ylabels()
 
     out_dir = Path(output_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
