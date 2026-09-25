@@ -4,7 +4,7 @@ Run in this order from the repo root with the venv active:
 
 1. `black src figures`: CI fails on any formatting diff (`psf/black@stable`).
 2. `PYTHONPATH=. ./venv/bin/pylint src --errors-only` must report nothing. This is the gate in CI and locally.
-3. If `figures/` or anything they read changed, render all four figures into a scratch dir
+3. If `figures/` or anything they read changed, render all five figures into a scratch dir
    (`mem:suggested_commands`). `figure-plots.yml` fails if one of them errors.
 4. If simulation code changed, run a short smoke simulation of the touched controller(s) with
    `check_violation` (`src/scripts/visualize_simulation.py` pattern, small grid, few steps), not a full
@@ -13,7 +13,7 @@ Run in this order from the repo root with the venv active:
    affected `results/<analysis>/` are stale. Do **not** re-run them on your own. End the final
    summary with a reminder naming the analyses (and scenarios) to regenerate, and offer to run them.
    Mapping:
-   - `simulation/` and `planners/` modules → all four analyses
+   - `simulation/` and `planners/` modules → all five analyses (incl. `delay_evaluation`)
    - `scripts/<analysis>.py` → that analysis
    - `simulation/visualization.py`, `visualize_simulation`, `performance_tracking` and the legacy
      sweep → none

@@ -37,12 +37,16 @@ jobs:
             - name: Render Figure 4
               run: python figures/Figure_4.py --no-show --output-dir ci_figures
 
+            - name: Render Figure 5
+              run: python figures/Figure_5.py --no-show --output-dir ci_figures
+
             - name: Verify outputs
               run: |
                   ls -la ci_figures
                   test -f ci_figures/Figure_1.png
                   test -f ci_figures/Figure_2.png
                   test -f ci_figures/Figure_3.png
+                  test -f ci_figures/Figure_5.png
                   if ! ls ci_figures/Figure_tradeoff_*.png >/dev/null 2>&1; then
                     echo 'No Figure_tradeoff_*.png found' && exit 1
                   fi

@@ -31,7 +31,7 @@ controllers = [
     ("DECENTRALIZED_TOKEN_PASSING", "Token Passing"),
     ("DECENTRALIZED_NEGOTIATE_EGOISTIC", "Egoistic"),
     ("DECENTRALIZED_NEGOTIATE_UTILITARIAN", "Utilitarian"),
-    ("DECENTRALIZED_NEGOTIATE_TRIP_KARMA", "Karma"),
+    ("DECENTRALIZED_NEGOTIATE_KARMA", "Karma"),
 ]
 
 grid_sizes = ["5", "10", "15"]

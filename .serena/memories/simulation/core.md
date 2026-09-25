@@ -1,25 +1,32 @@
 # Simulation core
 
-## Step loop (duplicated in every script, no shared runner)
+## Step loop (`Environment.step`, called by every script)
 
 ```
 env = Environment(settings); spawn_agent() × n_agents; spawn_task() × n_agents
 while env.time < T:
-    env.time += 1
-    env.handle_agents()                 # execute one route step, then plan (per controller)
-    env.close_finished_tasks()          # release delivering agents before assignment
-    top up: spawn_task() until len(tasks) == len(agents) or a spawn fails
-    env.assign_open_tasks()
+    env.step()
     n_astar += AStarPathPlanner.get_counter(); AStarPathPlanner.reset_counter()
+
+Environment.step():
+    time += 1
+    handle_agents_route_execution()     # execute one route step, register pickups
+    close_finished_tasks()              # release delivering agents before assignment
+    top up until #unassigned tasks == ceil(n_agents / 2) or a spawn fails
+    assign_open_tasks()
+    handle_agents_route_planning()      # per-controller planning (if/elif dispatch)
 ```
 
-`performance_tracking` spawns at most one task per step (`if`, not `while`);
-every other script tops up. A change to the loop must be repeated in each script
-(`mem:open_issues`). Releasing before assigning lets a delivering agent get a new task in the same
-step. With the opposite order, every delivery cost at least one idle step: idle time was about 12%
-of agent-steps, now it is about 6%. Most of the remaining idle time comes from the assignment
-reserving open tasks for CARRY agents. A task backlog (#tasks > #agents) would remove it, but it
-was only evaluated (`TO_FIX.md`).
+Planning runs **after** the assignment, so an agent assigned at step t plans in t and moves in
+t + 1: an unobstructed trip takes exactly `minimum_pickup_time + minimum_task_time` from
+`assigned_time` (verified: 1 agent, 300 steps, every task delay 0). Scripts only record
+positions before `step()` for `check_violation`; nothing else happens between execution and planning.
+
+The spare pool (ceil(n/2) unassigned tasks) covers the tasks the assignment reserves for CARRY
+agents (`is_available_soon`). On 10×10/30 idle agents drop to ≈ 0 per step; on 5×5/10 the grid holds
+only ≈ 11 tasks (spawn cells need a free border), so ≈ 0.4 of 10 agents stay idle per step, mostly
+because the Hungarian assignment still hands spare tasks to CARRY agents. Task waiting time is not
+measured (task time starts at the assignment), so the pool does not bias any metric.
 
 ## Settings dict (`Environment.settings`)
 
@@ -46,9 +53,12 @@ across seed jobs.
   replans towards the delivery once it ends
   (`Environment.handle_agents_route_execution`). Dropping the route instead caused vertex conflicts
   when the replan failed.
+- On assignment (`Agent.assign_task`), `task.assigned_time` is set and `minimum_pickup_time`
+  becomes the unobstructed A* time from the agent's pose to the pickup (0 if it stands on it). An
+  agent already on the pickup cell becomes CARRY with the delivery cell as target right away.
 - On pickup, `task.pickup_time` is set and `minimum_task_time` becomes the unobstructed A* time
-  pickup→delivery (from the current orientation). For `TRIP_KARMA` the agent's karma is reset
-  (`mem:simulation/negotiation`).
+  pickup→delivery (from the current orientation). For `TRIP_KARMA` (not used in any evaluation)
+  the agent's karma is reset (`mem:simulation/negotiation`).
 - A task is finished when its `current_position` equals `to_position`. The agent is released
   and the task moves into `env.completed_tasks[agent_id]`.
 - Randomness: always use `env.rng` (`np.random.default_rng(seed)`). Runs are deterministic per seed;

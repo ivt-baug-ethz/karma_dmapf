@@ -13,7 +13,7 @@ brew install python@3.13 && python3.13 -m venv venv && pip install -r requiremen
 ```bash
 black src figures                       # format; CI runs psf/black
 PYTHONPATH=. ./venv/bin/pylint src --errors-only   # the actual gate; must be silent
-for n in 1 2 3 4; do ./venv/bin/python figures/Figure_$n.py --no-show --output-dir <scratch>; done
+for n in 1 2 3 4 5; do ./venv/bin/python figures/Figure_$n.py --no-show --output-dir <scratch>; done
 ```
 
 Render into a scratch dir: the default output dir is `figures/` itself, whose PNGs are committed.
@@ -23,6 +23,7 @@ Render into a scratch dir: the default output dir is `figures/` itself, whose PN
 ```bash
 ./venv/bin/python src/scripts/visualize_simulation.py   # GIF -> results/animations/animation_<CTRL>.gif
 ./venv/bin/python src/scripts/karma_influence.py        # edit GRID_SIZE / N_AGENTS first
+./venv/bin/python src/scripts/delay_evaluation.py       # both small scenarios, ≈ 9 min on 16 cores
 ```
 
 Analyses take minutes to hours and write the tracked `results/<analysis>/`. **Run them only when the user agrees**

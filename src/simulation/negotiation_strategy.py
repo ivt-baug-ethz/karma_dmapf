@@ -116,6 +116,10 @@ class NegotiationStrategy:
         #     # if difference of augmented costs is below the threshold, this agent has to resolve the conflict
         #     other_resolves_conflict = False
 
+        # idle agents are outside the karma economy: no payment when they block or are forced aside
+        if agent_other.is_idle():
+            return other_resolves_conflict
+
         payment = NegotiationStrategy._karma_payment_rule(
             cost_mine,
             cost_other,
