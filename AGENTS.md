@@ -57,9 +57,9 @@ behaviour.
   The analyses take minutes to hours. Whenever a change touches simulation code or an analysis
   script, end your final summary with a reminder naming the analyses whose `results/<analysis>/` are now
   stale, and offer to regenerate them. The `analysis_and_figures` memory maps code → analysis → figure.
-- **All eight controllers keep code support**, but the evaluations and figures use only the four
+- **All six controllers keep code support**, but the evaluations and figures use only the four
   paper controllers: token passing, egoistic, utilitarian, and Karma (`TRIP_KARMA`). Never add
-  `CENTRALIZED`, `NEGOTIATE_KARMA` or `*2` to a script or scenario that does not use them already
+  `CENTRALIZED` or `NEGOTIATE_KARMA` to a script or scenario that does not use them already
   (`simulation/negotiation` memory).
 
 ## Git (hard rules)

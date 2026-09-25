@@ -47,7 +47,7 @@ Not a library: there is no `pyproject.toml` / `setup.py`, nothing is installed, 
   metadata use the *base* size.
 - **Paper scenarios**: base grid 5/10/15 with 10/30/80 agents, T = 100 steps.
   Seeds: 41–50 in the efficiency benchmark and time distribution, 41–60 in the karma influence analyses.
-- **Controllers**: all eight keep code support, but evaluations and figures use only the four paper
+- **Controllers**: all six keep code support, but evaluations and figures use only the four paper
   controllers. Never add another controller to a script that does not already run it
   (`mem:simulation/negotiation`).
 - Agent instructions have one source each:
@@ -78,7 +78,7 @@ Not a library: there is no `pyproject.toml` / `setup.py`, nothing is installed, 
 - `mem:simulation/core`: step loop, agent/task lifecycle, orientation-aware A* and reservation grid, conflict detection, CBS, assignment, RNG and the thread-local A* counter.
 - `mem:simulation/negotiation`:
   - controller table and negotiation protocol
-  - cost-to-change and cost transform
+  - cost-to-change, and why Δ stays in raw time steps
   - Karma rule, payment and reset
   - paper ↔ code naming
 - `mem:analysis_and_figures`:

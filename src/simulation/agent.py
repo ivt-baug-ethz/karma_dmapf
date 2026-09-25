@@ -48,7 +48,6 @@ class Agent:
         self.status: int = AGENT_STATUS_IDLE
         self.route: List[str] = []
         self.target_position: List[int] = []
-        self.minimal_path_cost: Optional[int] = None
         self.grid.occupy(self.current_position)
         self.path_planner: AStarPathPlanner = AStarPathPlanner(
             static_occupancy_grid=self.environment.static_grid.occupancy_grid,
@@ -68,31 +67,9 @@ class Agent:
         self.assigned_task = None
         self.status = AGENT_STATUS_IDLE
         self.target_position = []
-        self.minimal_path_cost = None
-
-    def get_forecasted_path_total_cost(self):
-        if self.assigned_task is None:
-            return 0
-        time_so_far = self.environment.time - self.assigned_task.spawned_time
-        if self.status == AGENT_STATUS_CARRY:
-            return time_so_far + len(self.route)
-        elif self.status == AGENT_STATUS_PICKUP:
-            carry_path = self._compute_shortest_path(
-                start=(
-                    self.assigned_task.from_position[0],
-                    self.assigned_task.from_position[1],
-                    0,
-                ),
-                goal=self.assigned_task.to_position,
-            )
-            carry_time = len(carry_path)
-            return time_so_far + len(self.route) + carry_time
-        else:
-            return None
 
     def assign_task(self, task: "Task", time: int) -> None:
         self.assigned_task = task
-        self.minimal_path_cost = self._compute_minimal_path_cost()
         self.target_position = task.from_position
         if self.current_position == task.from_position:
             self.status = AGENT_STATUS_CARRY
@@ -133,26 +110,6 @@ class Agent:
                 f"Could not compute shortest path from {start[:2]} to {goal}."
             )
         return path
-
-    def _compute_minimal_path_cost(self) -> int:
-        if self.assigned_task is None:
-            raise ValueError("Cannot compute minimal path cost without assigned task.")
-
-        pickup_path = self._compute_shortest_path(
-            start=(
-                self.current_position[0],
-                self.current_position[1],
-                self.current_orientation,
-            ),
-            goal=self.assigned_task.from_position,
-        )
-        pickup_state = pickup_path[-1]
-        delivery_path = self._compute_shortest_path(
-            start=(pickup_state.x, pickup_state.y, pickup_state.theta),
-            goal=self.assigned_task.to_position,
-        )
-
-        return len(pickup_path) + len(delivery_path)
 
     def update_target_position(self, time: int) -> None:
         # determine target
@@ -376,7 +333,7 @@ class Agent:
 
     def determine_cost_to_change(
         self, to_avoid_path: List["PathPlannerState"]
-    ) -> Tuple[float, Optional[List["PathPlannerState"]]]:
+    ) -> Tuple[int, Optional[List["PathPlannerState"]]]:
         current_cost = len(self.route)
 
         # determine reservation_grid given all already planned routes

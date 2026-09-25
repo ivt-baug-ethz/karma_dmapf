@@ -48,8 +48,7 @@ across seed jobs.
   when the replan failed.
 - On pickup, `task.pickup_time` is set and `minimum_task_time` becomes the unobstructed A* time
   pickup→delivery (from the current orientation). For `TRIP_KARMA` the agent's karma is reset
-  (`mem:simulation/negotiation`). `minimal_path_cost` (agent→pickup→delivery, unobstructed) is set on
-  assignment and is used only by the `*2` cost transform.
+  (`mem:simulation/negotiation`).
 - A task is finished when its `current_position` equals `to_position`. The agent is released
   and the task moves into `env.completed_tasks[agent_id]`.
 - Randomness: always use `env.rng` (`np.random.default_rng(seed)`). Runs are deterministic per seed;

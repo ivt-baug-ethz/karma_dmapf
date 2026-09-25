@@ -11,8 +11,6 @@ from src.simulation.constants import (
     MAPF_CONTROLLER_DECENTRALIZED_TOKEN_PASSING,
     MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_EGOISTIC,
     MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_UTILITARIAN,
-    MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_EGOISTIC2,
-    MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_UTILITARIAN2,
     MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_KARMA,
     MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_TRIP_KARMA,
 )
@@ -130,23 +128,6 @@ class Environment:
                 lambda cost_other, cost_mine: NegotiationStrategy.negotiate_utilitarian(
                     cost_other, cost_mine, rng=self.rng
                 )
-            )
-        elif (
-            self.settings["mapf_control"]
-            == MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_EGOISTIC2
-        ):
-            self.handle_agents_route_planning_decentralized_negotiate(
-                NegotiationStrategy.negotiate_egoistic, cost_transform=True
-            )
-        elif (
-            self.settings["mapf_control"]
-            == MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_UTILITARIAN2
-        ):
-            self.handle_agents_route_planning_decentralized_negotiate(
-                lambda cost_other, cost_mine: NegotiationStrategy.negotiate_utilitarian(
-                    cost_other, cost_mine, rng=self.rng
-                ),
-                cost_transform=True,
             )
         elif (
             self.settings["mapf_control"]
@@ -339,7 +320,7 @@ class Environment:
         original_route = list(agent.route)
         agent.route = route if route else []
         path = conflicting_agent.path_planner.convert_route_to_path(conflicting_agent)
-        cost_mine: float = float("inf")
+        cost_mine: int = COST_TO_CHANGE_INFEASIBLE
         try:
             if path:
                 cost_mine, alternative_path_mine = agent.determine_cost_to_change(
@@ -363,7 +344,7 @@ class Environment:
         use_agent_params,
     ):
         if use_agent_params:
-            agreement_to_solve_conflict = negotiation_function(
+            other_resolves_conflict = negotiation_function(
                 cost_other,
                 cost_mine,
                 conflicting_agent,
@@ -375,13 +356,12 @@ class Environment:
             if conflicting_agent.is_idle():
                 cost_other = COST_TO_CHANGE_INFEASIBLE
 
-            agreement_to_solve_conflict = negotiation_function(cost_other, cost_mine)
-        return agreement_to_solve_conflict
+            other_resolves_conflict = negotiation_function(cost_other, cost_mine)
+        return other_resolves_conflict
 
     def handle_agents_route_planning_decentralized_negotiate(
         self,
         negotiation_function: Callable,
-        cost_transform: bool = False,
         use_agent_params: bool = False,
     ) -> None:
         """
@@ -478,62 +458,13 @@ class Environment:
                     )
 
                 if alternative_path_other is None:
-                    agreement_to_solve_conflict = False
+                    other_resolves_conflict = False
                     if self.settings["debug_statements"]:
                         print(
                             f"Conflict with agent {conflicting_agent.id} but no alternative path found by conflicting agent for them to solve the conflict."
                         )
                 else:
-                    if (
-                        cost_transform
-                        and conflicting_agent.minimal_path_cost is not None
-                    ):
-                        # transform cost
-                        cost_other_min = conflicting_agent.minimal_path_cost
-                        cost_mine_min = agent.minimal_path_cost
-                        cost_other_realized = (
-                            conflicting_agent.get_forecasted_path_total_cost()
-                        )
-
-                        cost_mine_total_forecasted = (
-                            agent.get_forecasted_path_total_cost()
-                        )
-                        if cost_mine_total_forecasted is None:
-                            raise ValueError(
-                                f"Cannot transform costs for negotiation because agent {agent.id} has no forecasted path total cost."
-                            )
-                        cost_mine_realized = cost_mine_total_forecasted + len(
-                            current_path
-                        )  # because agent.route is not set yet
-
-                        if (
-                            cost_other_realized is None
-                            or cost_mine_realized is None
-                            or cost_mine_min is None
-                        ):
-                            raise ValueError(
-                                f"Cannot transform costs for negotiation because one of the agents has no forecasted path total cost."
-                            )
-
-                        deviation_other_before = cost_other_realized / cost_other_min
-                        deviation_other_after = (
-                            cost_other_realized + change_cost_other
-                        ) / cost_other_min
-                        deviation_mine_before = cost_mine_realized / cost_mine_min
-                        deviation_mine_after = (
-                            cost_mine_realized + change_cost_mine
-                        ) / cost_mine_min
-                        # print(">>")
-                        # print(conflicting_agent.id, conflicting_agent.status, ":", cost_other_min, cost_other_realized, ",", change_cost_other, deviation_other_before, deviation_other_after)
-                        # print(agent.id, agent.status, ":", cost_mine_min, cost_mine_realized, change_cost_mine, ",", deviation_mine_before, deviation_mine_after)
-                        # print(">>")
-                        change_cost_other = (
-                            deviation_other_after - deviation_other_before
-                        )
-                        change_cost_mine = deviation_mine_after - deviation_mine_before
-                        # make decision
-
-                    agreement_to_solve_conflict = self.make_decision(
+                    other_resolves_conflict = self.make_decision(
                         agent,
                         conflicting_agent,
                         change_cost_other,
@@ -541,12 +472,11 @@ class Environment:
                         negotiation_function,
                         use_agent_params,
                     )
-                    # execute decision
 
                 if self.settings["debug_statements"]:
-                    print("\t\t Outcome", agreement_to_solve_conflict)
+                    print("\t\t Outcome", other_resolves_conflict)
 
-                if agreement_to_solve_conflict and alternative_path_other is not None:
+                if other_resolves_conflict and alternative_path_other is not None:
                     conflicting_agent.change_path_to_satisfy(
                         change_to_path=alternative_path_other
                     )

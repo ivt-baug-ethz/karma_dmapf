@@ -14,12 +14,11 @@ Target: one shared simulation runner and settings source. Do not start this refa
 
 ## Controller support to restore/verify
 
-All eight controllers must keep working, but only the four paper controllers are used in
+All six controllers must keep working, but only the four paper controllers are used in
 evaluations (`mem:simulation/negotiation`). These are unverified against the current code and may
 need updating:
 - `CENTRALIZED` (CBS), which raises if no solution is found
 - `DECENTRALIZED_NEGOTIATE_KARMA`
-- `DECENTRALIZED_NEGOTIATE_EGOISTIC2` / `UTILITARIAN2` (cost transform)
 
 This is planned as an early task: a short smoke run per controller with `check_violation`. Fixing
 them must not add them to any analysis or figure.
