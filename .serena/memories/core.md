@@ -2,7 +2,7 @@
 
 Research code (Python 3.13) for **Karma mechanisms in decentralised, cooperative MAPF**. It
 simulates a lifelong, orientation-aware warehouse pickup-and-delivery (MAPD) scenario on a square
-grid and compares conflict-resolution controllers: token passing, egoistic/altruistic negotiation,
+grid and compares conflict-resolution controllers: token passing, egoistic/utilitarian negotiation,
 Karma negotiation, and centralised CBS. It also produces the paper's evaluation data and figures.
 Not a library: there is no `pyproject.toml` / `setup.py`, nothing is installed, and there are no tests.
 
@@ -13,7 +13,7 @@ Not a library: there is no `pyproject.toml` / `setup.py`, nothing is installed, 
 | `src/simulation/environment.py` | `Environment`: settings dict, spawning, task assignment/closing, per-controller route planning incl. the negotiation loop (`mem:simulation/core`, `mem:simulation/negotiation`) |
 | `src/simulation/agent.py` | `Agent`: position/orientation/status/route, route execution, cost-to-change, karma balance and its per-trip reset |
 | `src/simulation/task.py` | `Task`: random pickup/delivery cells, spawn/pickup/completion times, `minimum_task_time` |
-| `src/simulation/negotiation_strategy.py` | `NegotiationStrategy`: egoistic / altruistic / karma decision rules and the karma payment rule |
+| `src/simulation/negotiation_strategy.py` | `NegotiationStrategy`: egoistic / utilitarian / karma decision rules and the karma payment rule |
 | `src/simulation/geometry.py` | `Grid` (occupancy, random free cells), `GridTools` (3-D reservation table, vertex/edge conflict detection), `Geometry` (manhattan + rotation estimate) |
 | `src/simulation/constants.py` | agent statuses/orientations, `DIRS`, spawn borders, the `MAPF_CONTROLLER_*` strings |
 | `src/simulation/metrics.py` | `gini`, `summarize`, `compute_run_metrics`, shared by the efficiency benchmark and the tradeoff/sweep scripts |

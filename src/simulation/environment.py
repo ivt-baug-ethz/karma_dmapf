@@ -10,9 +10,9 @@ from src.simulation.constants import (
     MAPF_CONTROLLER_CENTRALIZED,
     MAPF_CONTROLLER_DECENTRALIZED_TOKEN_PASSING,
     MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_EGOISTIC,
-    MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_ALTRUISTIC,
+    MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_UTILITARIAN,
     MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_EGOISTIC2,
-    MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_ALTRUISTIC2,
+    MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_UTILITARIAN2,
     MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_KARMA,
     MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_TRIP_KARMA,
 )
@@ -124,10 +124,10 @@ class Environment:
             )
         elif (
             self.settings["mapf_control"]
-            == MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_ALTRUISTIC
+            == MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_UTILITARIAN
         ):
             self.handle_agents_route_planning_decentralized_negotiate(
-                lambda cost_other, cost_mine: NegotiationStrategy.negotiate_altruistic(
+                lambda cost_other, cost_mine: NegotiationStrategy.negotiate_utilitarian(
                     cost_other, cost_mine, rng=self.rng
                 )
             )
@@ -140,10 +140,10 @@ class Environment:
             )
         elif (
             self.settings["mapf_control"]
-            == MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_ALTRUISTIC2
+            == MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_UTILITARIAN2
         ):
             self.handle_agents_route_planning_decentralized_negotiate(
-                lambda cost_other, cost_mine: NegotiationStrategy.negotiate_altruistic(
+                lambda cost_other, cost_mine: NegotiationStrategy.negotiate_utilitarian(
                     cost_other, cost_mine, rng=self.rng
                 ),
                 cost_transform=True,
@@ -247,7 +247,7 @@ class Environment:
             if routes is not None:
                 for idx, agent in enumerate(planning_relevant_agents):
                     agent.route = routes[idx]
-            else:  # Fallback: DECENTRALIZED_ALTRUISTIC
+            else:  # Fallback: DECENTRALIZED_UTILITARIAN
                 raise Exception(
                     "Centralized planning failed to find a solution, consider adjusting parameters or using a different controller."
                 )

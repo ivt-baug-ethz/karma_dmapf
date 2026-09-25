@@ -23,7 +23,7 @@ class NegotiationStrategy:
         return agreement_to_solve_conflict
 
     @staticmethod
-    def negotiate_altruistic(
+    def negotiate_utilitarian(
         cost_other: int, cost_mine: int, rng: Optional[Any] = None
     ) -> bool:
         # who is worse off?

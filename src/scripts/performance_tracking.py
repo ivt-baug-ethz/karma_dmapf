@@ -17,7 +17,7 @@ from src.simulation.constants import (
     MAPF_CONTROLLER_CENTRALIZED,
     MAPF_CONTROLLER_DECENTRALIZED_TOKEN_PASSING,
     MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_EGOISTIC,
-    MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_ALTRUISTIC,
+    MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_UTILITARIAN,
     MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_KARMA,
     MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_TRIP_KARMA,
 )
@@ -32,7 +32,7 @@ simulation_settings = {
     # "mapf_control": MAPF_CONTROLLER_CENTRALIZED,
     # "mapf_control": MAPF_CONTROLLER_DECENTRALIZED_TOKEN_PASSING,
     # "mapf_control": MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_EGOISTIC,
-    # "mapf_control": MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_ALTRUISTIC,
+    # "mapf_control": MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_UTILITARIAN,
     "mapf_control": MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_KARMA,
     # "mapf_control": MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_TRIP_KARMA,
     "time_horizon_visualization": 10,
@@ -194,7 +194,7 @@ Distribution:    mean = 5.593 	 std = 0.159
 =====================================================
 
 =====================================================
-Experiment Results for algorithm DECENTRALIZED_NEGOTIATE_ALTRUISTIC over 10 experiments
+Experiment Results for algorithm DECENTRALIZED_NEGOTIATE_UTILITARIAN over 10 experiments
 =====================================================
 A* calls:        mean = 168357.700 	 std = 10569.894
 Completed tasks: mean = 507.700 	 std = 7.669

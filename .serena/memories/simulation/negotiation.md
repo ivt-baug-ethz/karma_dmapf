@@ -6,18 +6,18 @@
 |---|---|---|---|
 | `DECENTRALIZED_TOKEN_PASSING` | Token Passing | plan around all committed routes, no negotiation | yes |
 | `DECENTRALIZED_NEGOTIATE_EGOISTIC` | Egoistic (Eq. 2) | other replans iff Δ_other ≤ 0 | yes |
-| `DECENTRALIZED_NEGOTIATE_ALTRUISTIC` | Altruistic (Eq. 3) | smaller Δ replans, tie random (`env.rng`) | yes |
+| `DECENTRALIZED_NEGOTIATE_UTILITARIAN` | Utilitarian (Eq. 3) | smaller Δ replans, tie random (`env.rng`) | yes |
 | `DECENTRALIZED_NEGOTIATE_TRIP_KARMA` | **Karma** (Eq. 5/6) | karma rule, balance reset on every pickup | yes |
 | `DECENTRALIZED_NEGOTIATE_KARMA` | – | karma rule, balance never reset | no (only analysis_2 logs + legacy sweep) |
-| `DECENTRALIZED_NEGOTIATE_EGOISTIC2` / `ALTRUISTIC2` | – | egoistic/altruistic on the relative-deviation cost transform | no (ALTRUISTIC2 only in analysis_2 logs + legacy sweep) |
+| `DECENTRALIZED_NEGOTIATE_EGOISTIC2` / `UTILITARIAN2` | – | egoistic/utilitarian on the relative-deviation cost transform | no (UTILITARIAN2 only in analysis_2 logs + legacy sweep) |
 | `CENTRALIZED` | CBS (§II-B only) | `Planner_CBS` (`mem:simulation/core`) | no |
 
 The figures use a fixed label and style for each paper controller. Colours (Okabe-Ito) plus
 marker / hatch live in `figures/paper_style.py`: Token Passing black `#000000` `D` `xxx`, Egoistic
-blue `#0072B2` `^` `\\\`, Altruistic green `#009E73` `s` `///`, Karma orange `#D55E00` `o` no
+blue `#0072B2` `^` `\\\`, Utilitarian green `#009E73` `s` `///`, Karma orange `#D55E00` `o` no
 hatch. Karma is orange on purpose, so it is the most visible series; the authors chose this over
 alternatives (Tol muted, Tol high-contrast) compared side by side. Trade-off they accepted: in
-greyscale, Token Passing (black) is the darkest series, and Karma and Altruistic are similar
+greyscale, Token Passing (black) is the darkest series, and Karma and Utilitarian are similar
 mid-greys that only their markers (circle vs square) separate. All lines stay solid (a deliberate choice: mixed dash patterns looked
 inconsistent). The set is colour-blind safe (AAMAS rule), and the markers and hatches keep it
 readable in greyscale. Keep them identical across `figures/`. The
@@ -37,7 +37,7 @@ For each non-idle agent i with an empty route and a target:
    - No alternative: `COST_TO_CHANGE_INFEASIBLE` (`inf`, `constants.py`).
    - Idle agent: Δ is its **real parking detour**, or `inf` without a parking path.
    - `Environment.make_decision` passes `inf` for an idle other agent to the rules without agent
-     parameters. Egoistic, altruistic and `*2` therefore behave exactly as with the former `1000`
+     parameters. Egoistic, utilitarian and `*2` therefore behave exactly as with the former `1000`
      (verified task-by-task identical).
 5. `negotiation_function(cost_other, cost_mine[, agents, params_karma])` returns **True = the other
    (conflicting) agent replans**. Then the other agent adopts its alternative path immediately.
@@ -57,7 +57,7 @@ For each non-idle agent i with an empty route and a target:
   - j idle and Δ_mine finite → i gives way. An idle agent has no task to delay and does not give way.
 - Otherwise: `adj_mine − adj_other > delta_threshold` → other replans; `<` → self replans; `==` → random.
   `delta_threshold` is **not in the paper**. All committed runs use 0, which is exactly Eq. 5
-  (τ = 0 ≡ altruistic). A non-zero value makes the rule asymmetric.
+  (τ = 0 ≡ utilitarian). A non-zero value makes the rule asymmetric.
 - Payment (`_karma_payment_rule`, rule 3 = paper Eq. 6): the replanner receives its own Δ and the
   winner pays the same amount (zero-sum, pay-to-peer).
   - The payment is `max(0, Δ_yielder)`, so it is never negative.
@@ -84,7 +84,7 @@ For each non-idle agent i with an empty route and a target:
 
 ## Semantics to keep straight
 
-- "Altruistic" means the pair minimises the joint cost: the one with the smaller detour gives way.
-  It does not mean "always yield".
+- "Utilitarian" means the pair minimises the joint cost: the one with the smaller detour gives way.
+  It favours neither agent, only the better outcome for the system, and does not mean "always yield".
 - Every negotiation controller adds many A* calls (conflict prioritisation plans hypothetical
   paths). Egoistic costs the most.

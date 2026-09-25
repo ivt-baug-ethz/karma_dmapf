@@ -6,7 +6,7 @@ points here.
 
 ## Project
 
-**karma_dmapf** is the Python 3.13 research code behind the paper *"Karma Mechanisms for Decentralised, Cooperative Multi Agent Path Finding"*. It simulates a lifelong, orientation-aware warehouse pickup-and-delivery (MAPD) scenario on a grid. Conflicts are resolved by token passing, by pairwise negotiation (egoistic, altruistic, Karma) or by centralised CBS. Key dependencies (pinned in `requirements.txt`): `numpy`, `scipy`, `matplotlib`, `pandas`, `seaborn`, `imageio`, `tqdm`. Everything runs locally as scripts: simulation and analyses in `src/`, paper figures in `figures/`. There is no server, deployment target or test suite.
+**karma_dmapf** is the Python 3.13 research code behind the paper *"Karma Mechanisms for Decentralised, Cooperative Multi Agent Path Finding"*. It simulates a lifelong, orientation-aware warehouse pickup-and-delivery (MAPD) scenario on a grid. Conflicts are resolved by token passing, by pairwise negotiation (egoistic, utilitarian, Karma) or by centralised CBS. Key dependencies (pinned in `requirements.txt`): `numpy`, `scipy`, `matplotlib`, `pandas`, `seaborn`, `imageio`, `tqdm`. Everything runs locally as scripts: simulation and analyses in `src/`, paper figures in `figures/`. There is no server, deployment target or test suite.
 
 `src/` holds two packages, `simulation/` and `planners/`, plus the entry points in `src/scripts/`. Imports are absolute from the repository root (`from src.simulation.environment import Environment`), so every script runs from the repo root with the venv active and `export PYTHONPATH=.`: `python src/scripts/<script>.py`. Nothing is installed and `sys.path` is never manipulated. All outputs are anchored at the repository root. Figure inputs go to `results/<analysis>/`, which is committed. Run output goes to `results/runs/` and manual copies of old runs go to `results/archive/`; both are git-ignored. Do not add top-level directories without being asked.
 
@@ -58,7 +58,7 @@ behaviour.
   script, end your final summary with a reminder naming the analyses whose `results/<analysis>/` are now
   stale, and offer to regenerate them. The `analysis_and_figures` memory maps code → analysis → figure.
 - **All eight controllers keep code support**, but the evaluations and figures use only the four
-  paper controllers: token passing, egoistic, altruistic, and Karma (`TRIP_KARMA`). Never add
+  paper controllers: token passing, egoistic, utilitarian, and Karma (`TRIP_KARMA`). Never add
   `CENTRALIZED`, `NEGOTIATE_KARMA` or `*2` to a script or scenario that does not use them already
   (`simulation/negotiation` memory).
 

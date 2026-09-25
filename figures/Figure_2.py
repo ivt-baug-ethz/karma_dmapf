@@ -28,14 +28,14 @@ FIGURE_HEIGHT = 8.0
 controller_file_names = [
     "DECENTRALIZED_TOKEN_PASSING",
     "DECENTRALIZED_NEGOTIATE_EGOISTIC",
-    "DECENTRALIZED_NEGOTIATE_ALTRUISTIC",
+    "DECENTRALIZED_NEGOTIATE_UTILITARIAN",
     "DECENTRALIZED_NEGOTIATE_TRIP_KARMA",
 ]
 
 controller_labels = [
     "Token Passing",
     "Egoistic",
-    "Altruistic",
+    "Utilitarian",
     "Karma",
 ]
 

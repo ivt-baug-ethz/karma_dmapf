@@ -33,7 +33,7 @@ This is the online repository of "Karma Mechanisms for Decentralised, Cooperativ
 </tr>
 <tr>
 <td><img src="results/animations/animation_DECENTRALIZED_NEGOTIATE_EGOISTIC.gif" /></td>
-<td><img src="results/animations/animation_DECENTRALIZED_NEGOTIATE_ALTRUISTIC.gif" /></td>
+<td><img src="results/animations/animation_DECENTRALIZED_NEGOTIATE_UTILITARIAN.gif" /></td>
 </tr>
 <tr>
 <td><b><center>Negotiation (Egoistic)</center></b></td>
@@ -43,10 +43,10 @@ This is the online repository of "Karma Mechanisms for Decentralised, Cooperativ
 
 <table>
 <tr>
-<td><img src="results/animations/animation_DECENTRALIZED_NEGOTIATE_ALTRUISTIC_5x5_10_modified.gif" /></td>
-<td><img src="results/animations/animation_DECENTRALIZED_NEGOTIATE_ALTRUISTIC_10x10_30_modified.gif" /></td>
-<td><img src="results/animations/animation_DECENTRALIZED_NEGOTIATE_ALTRUISTIC_15x15_80_modified.gif" /></td>
-<td><img src="results/animations/animation_DECENTRALIZED_NEGOTIATE_ALTRUISTIC_20x20_140_modified.gif" /></td>
+<td><img src="results/animations/animation_DECENTRALIZED_NEGOTIATE_UTILITARIAN_5x5_10_modified.gif" /></td>
+<td><img src="results/animations/animation_DECENTRALIZED_NEGOTIATE_UTILITARIAN_10x10_30_modified.gif" /></td>
+<td><img src="results/animations/animation_DECENTRALIZED_NEGOTIATE_UTILITARIAN_15x15_80_modified.gif" /></td>
+<td><img src="results/animations/animation_DECENTRALIZED_NEGOTIATE_UTILITARIAN_20x20_140_modified.gif" /></td>
 </tr>
 <tr>
 <td><b><center>5x5<br>(10 agents)</center></b></td>
@@ -116,7 +116,7 @@ simulation_settings = {
     # "mapf_control": MAPF_CONTROLLER_CENTRALIZED,
     # "mapf_control": MAPF_CONTROLLER_DECENTRALIZED_TOKEN_PASSING,
     # "mapf_control": MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_EGOISTIC,
-    "mapf_control": MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_ALTRUISTIC,
+    "mapf_control": MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_UTILITARIAN,
     # "mapf_control": MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_TRIP_KARMA,
     "time_horizon_visualization": 10,
     "time_simulation_duration": 100,
@@ -151,7 +151,7 @@ This generates a performance summary like:
 
 ```
 =====================================================
-Experiment Results for algorithm DECENTRALIZED_NEGOTIATE_ALTRUISTIC over 10 experiments
+Experiment Results for algorithm DECENTRALIZED_NEGOTIATE_UTILITARIAN over 10 experiments
 =====================================================
 A* calls:        mean = 168357.700 	 std = 10569.894
 Completed tasks: mean = 507.700 	 std = 7.669

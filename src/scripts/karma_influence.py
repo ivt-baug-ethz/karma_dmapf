@@ -3,7 +3,7 @@
 This script mirrors the core mechanics of ``karma_influence_sweep.py`` but
 targets one grid size and one agent count. It sweeps only the karma influence
 parameter (delta is fixed to 0) for four controllers: token-passing, egoistic,
-altruistic, and trip-karma. Seeded runs are parallelized. Results are written
+utilitarian, and trip-karma. Seeded runs are parallelized. Results are written
 to a timestamped folder under ``results/runs/`` and aggregated into a single
 ``summary.json`` stored both in that folder and in ``results/karma_influence/``
 for downstream plotting (``figures/Figure_3.py``).
@@ -25,7 +25,7 @@ import numpy as np
 from tqdm import tqdm
 
 from src.simulation.constants import (
-    MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_ALTRUISTIC,
+    MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_UTILITARIAN,
     MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_EGOISTIC,
     MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_TRIP_KARMA,
     MAPF_CONTROLLER_DECENTRALIZED_TOKEN_PASSING,
@@ -88,7 +88,7 @@ BASE_SIMULATION_SETTINGS: Dict[str, Any] = {
 CONTROLLERS = [
     MAPF_CONTROLLER_DECENTRALIZED_TOKEN_PASSING,
     MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_EGOISTIC,
-    MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_ALTRUISTIC,
+    MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_UTILITARIAN,
     MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_TRIP_KARMA,
 ]
 
