@@ -13,7 +13,8 @@ to the git-ignored `results/runs/`. The figure number is the only numbering; the
 | `time_distribution.py` | one controller × one scenario, seeds 41–50, sequential | `time_distribution/all_{task,service}_times_{CTRL}_{grid}_{agents}.txt` | `Figure_2.py` → `Figure_2.png` | Fig. 5 (box plots) |
 | `karma_influence.py` | 4 paper controllers × τ 0.0–1.0 × seeds 41–60, one scenario, `multiprocessing.Pool` | `karma_influence/summary_grid{g}_agents{n}_T100.json` (+ per-seed JSONs in `runs/karma_influence_<ts>/`) | `Figure_3.py` → `Figure_3.png` | Fig. 4 (service-time increase vs τ) |
 | `karma_influence_tradeoffs.py` | same as karma_influence but all `compute_run_metrics` metrics, `ProcessPoolExecutor` | `karma_influence_tradeoffs/summary_grid{g}_agents{n}_T100.json` (+ `runs/karma_influence_tradeoffs_<ts>/`) | `Figure_4.py` → `Figure_tradeoff_<metric>.png/.pdf` | not in paper (supplementary) |
-| `karma_influence_sweep.py` | legacy τ × δ sweep incl. KARMA, T=1000, plots its own figures | nothing (`runs/karma_influence_sweep/`) | none | – |
+| `delay_evaluation.py` | 4 paper controllers (Karma = `NEGOTIATE_KARMA` at τ 0.1/0.25/0.5/0.75/0.9, baselines once) × 5×5/10 + 10×10/30, seeds 41–50, T=300, `ProcessPoolExecutor`, ≈ 9 min on 16 cores; prints metric means and `negotiation_cases` totals | `delay_evaluation/tasks_grid{g}_agents{n}_T300.json` (metadata, summary rows, per-run metrics + `negotiation_cases` + per-task records `[agent_id, assigned, pickup, completed, min_pickup, min_task]`; + `runs/delay_evaluation_<ts>/`) | `Figure_5.py` → `Figure_5.png` | not yet (evaluation of the no-reset Karma and the delay metrics) |
+| `karma_influence_sweep.py` | legacy τ × δ sweep incl. both Karma variants, T=1000, plots its own figures | nothing (`runs/karma_influence_sweep/`) | none | – |
 
 Other entry points: `visualize_simulation.py` writes `results/animations/animation_<CTRL>.gif` (tracked)
 from frames in `results/runs/visualize_simulation/`; `performance_tracking.py` only prints.
@@ -27,8 +28,10 @@ from frames in `results/runs/visualize_simulation/`; `performance_tracking.py` o
   (`mem:open_issues`).
 - `karma_influence` keeps its own copy of `gini/summarize/compute_run_metrics` (service-time
   increase only). The others import `src.simulation.metrics`.
-- `results/time_distribution` also holds `KARMA` files. They have the same format
-  and the script still produces them when that controller is selected, but no figure reads them.
+- The analyses and Figures 1–4 use `NEGOTIATE_KARMA` (no reset) as Karma. The committed
+  `results/` still hold `TRIP_KARMA` files/series from the old runs (plus a few old `KARMA` time
+  distribution files): Figures 1 and 2 fail on the missing files and Figures 3 and 4 render
+  without a Karma series until the analyses are regenerated.
   A former `..._TOLERANCES.json` of karma_influence came from a code variant that no longer exists
   and is in `results/archive/`.
 
@@ -52,23 +55,34 @@ efficiency_benchmark JSON: `{grid: {CTRL: {n_agents: {metric: [mean, std, median
 - Figure_1: a 3×4 grid (rows: grids 5/10/15; cols: completed tasks, A* calls, avg task time, avg
   service time). It smooths with a centred rolling median (window 3) and multiplies completed tasks
   and A* calls by the hard-coded per-grid `scale_factors`. Keep these unless told otherwise.
-- All four share `figures/paper_style.py` for the controller styles (`mem:conventions`).
+- All five share `figures/paper_style.py` for the controller styles (`mem:conventions`).
   The before/after evidence for that style (colour-blindness and greyscale previews, the raw
   renders, `palette_report.txt`) is kept in the git-ignored `results/archive/a11y_showcase/`. The
   script that produced it is deliberately not in the repo.
-- CI (`figure-plots.yml`) renders all four and asserts `Figure_1..3.png` plus at least one
+- Figure_5: 2×5 grid (rows 5×5/10, 10×10/30; cols: per-task task time, task delay, service time,
+  per-agent cumulative delay at T as box plots, and the across-agent std of cumulative delay vs t,
+  mean over seeds). Karma τ series are the Karma orange shaded light→dark with τ.
+- CI (`figure-plots.yml`) renders all five and asserts `Figure_1..3.png`, `Figure_5.png` plus at least one
   `Figure_tradeoff_*.png`.
 
 ## Metrics (`src.simulation.metrics.compute_run_metrics`)
 
-- Task time = `completed_time − spawned_time`, i.e. it includes waiting for assignment
-  ("incl. Reallocation").
+- Task time = `completed_time − assigned_time` (assignment → drop-off). "Reallocation" in the keys
+  `"... Task Time (incl. Reallocation) (all agents)"` is the robot's drive from its pose at assignment
+  to the pickup, which task time includes and service time does not. Waiting between spawn and
+  assignment is deliberately excluded.
+- Task delay = task time − (`minimum_pickup_time` + `minimum_task_time`), i.e. minus the
+  unobstructed orientation-aware time pose-at-assignment → pickup → drop-off. 0 for an
+  unobstructed trip (`mem:simulation/core`, step order). Keys `Avg/Std Task Delay (all agents)`.
+- Cumulative agent delay = per-agent sum of task delays over its completed tasks (agents with at
+  least one). Keys `Avg/Std/Gini Cumulative Delay (per agent)`. Idle detours are not included
+  (`mem:simulation/negotiation`).
 - Service time = `completed_time − pickup_time`.
 - Service time increase (%) = (service − `minimum_task_time`) / `minimum_task_time` · 100.
 - Aggregates: all-task mean/std/total, and per-agent means ("per agent mean").
 - A* calls = the sum of the per-step counter.
 - `summarize` → (mean, population std, median, Gini, IQR) across seeds.
-- time_distribution writes raw per-task times with **+1** added (inclusive count).
+- time_distribution writes raw per-task task times (from the assignment) and service times, without offset.
 - Times are simulation steps; the figure axes label them "[s]".
 
 ## Key paper findings (for sanity-checking regenerated data)

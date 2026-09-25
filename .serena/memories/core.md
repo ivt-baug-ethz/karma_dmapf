@@ -3,25 +3,25 @@
 Research code (Python 3.13) for **Karma mechanisms in decentralised, cooperative MAPF**. It
 simulates a lifelong, orientation-aware warehouse pickup-and-delivery (MAPD) scenario on a square
 grid and compares conflict-resolution controllers: token passing, egoistic/utilitarian negotiation,
-Karma negotiation, and centralised CBS. It also produces the paper's evaluation data and figures.
+Karma negotiation (balances persist for the whole run), and centralised CBS. It also produces the paper's evaluation data and figures.
 Not a library: there is no `pyproject.toml` / `setup.py`, nothing is installed, and there are no tests.
 
 ## Source map
 
 | path | contents |
 |---|---|
-| `src/simulation/environment.py` | `Environment`: settings dict, spawning, task assignment/closing, per-controller route planning incl. the negotiation loop (`mem:simulation/core`, `mem:simulation/negotiation`) |
-| `src/simulation/agent.py` | `Agent`: position/orientation/status/route, route execution, cost-to-change, karma balance and its per-trip reset |
-| `src/simulation/task.py` | `Task`: random pickup/delivery cells, spawn/pickup/completion times, `minimum_task_time` |
+| `src/simulation/environment.py` | `Environment`: settings dict, spawning, task assignment/closing, `step()` (the one step loop all scripts call), per-controller route planning incl. the negotiation loop and its case counters (`mem:simulation/core`, `mem:simulation/negotiation`) |
+| `src/simulation/agent.py` | `Agent`: position/orientation/status/route, route execution, cost-to-change, karma balance and its per-trip reset (`TRIP_KARMA` only) |
+| `src/simulation/task.py` | `Task`: random pickup/delivery cells, spawn/assignment/pickup/completion times, `minimum_pickup_time`, `minimum_task_time` |
 | `src/simulation/negotiation_strategy.py` | `NegotiationStrategy`: egoistic / utilitarian / karma decision rules and the karma payment rule |
 | `src/simulation/geometry.py` | `Grid` (occupancy, random free cells), `GridTools` (3-D reservation table, vertex/edge conflict detection), `Geometry` (manhattan + rotation estimate) |
 | `src/simulation/constants.py` | agent statuses/orientations, `DIRS`, spawn borders, the `MAPF_CONTROLLER_*` strings |
-| `src/simulation/metrics.py` | `gini`, `summarize`, `compute_run_metrics`, shared by the efficiency benchmark and the tradeoff/sweep scripts |
+| `src/simulation/metrics.py` | `gini`, `summarize`, `compute_run_metrics` (task time, task delay, cumulative agent delay, service time), shared by the efficiency benchmark, tradeoff/sweep and delay_evaluation scripts |
 | `src/simulation/visualization.py` | matplotlib grid + reservation-table frames (Agg backend), `make_gif` via imageio |
 | `src/planners/astar.py` | `AStarPathPlanner` over (x, y, θ, t) with a reservation grid, `PathPlannerState`, the thread-local A* call counter |
 | `src/planners/cbs.py` | `Planner_CBS`, used only by the `CENTRALIZED` controller |
 | `src/planners/assignment.py` | Hungarian agent↔task assignment (`scipy.optimize.linear_sum_assignment`) |
-| `src/scripts/` | entry points: the four analyses and the legacy sweep (`mem:analysis_and_figures`), `visualize_simulation` (GIF rendering) and `performance_tracking` (quick 10-seed printout) |
+| `src/scripts/` | entry points: the five analyses and the legacy sweep (`mem:analysis_and_figures`), `visualize_simulation` (GIF rendering) and `performance_tracking` (quick 10-seed printout) |
 | `figures/Figure_N.py` | paper figures, rendered from `results/<analysis>/` to `figures/Figure_N.png`; CI renders them |
 | `figures/paper_style.py` | the shared controller colours, markers and hatches (colour-blind and greyscale safe) |
 | `results/<analysis>/` | committed analysis outputs, i.e. the figure inputs; one folder per analysis script, named after it |

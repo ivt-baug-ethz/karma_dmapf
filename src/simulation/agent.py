@@ -70,9 +70,11 @@ class Agent:
 
     def assign_task(self, task: "Task", time: int) -> None:
         self.assigned_task = task
+        task.assigned_time = time
         self.target_position = task.from_position
         if self.current_position == task.from_position:
             self.status = AGENT_STATUS_CARRY
+            self.target_position = task.to_position
 
             if self.assigned_task.pickup_time is None:
                 self.assigned_task.pickup_time = time
@@ -88,6 +90,14 @@ class Agent:
                     ]
         else:
             self.status = AGENT_STATUS_PICKUP
+            task.minimum_pickup_time = self._compute_shortest_path(
+                start=(
+                    self.current_position[0],
+                    self.current_position[1],
+                    self.current_orientation,
+                ),
+                goal=task.from_position,
+            )[-1].t
 
     def _get_evaluation_horizon(self) -> int:
         return max(

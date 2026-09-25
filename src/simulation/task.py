@@ -35,9 +35,11 @@ class Task:
         #######################################################################
         self.assigned_agent: Optional["Agent"] = None
         self.spawned_time: int = time
+        self.assigned_time: Optional[int] = None
         self.pickup_time: Optional[int] = None
         self.completed_time: Optional[int] = None
         #######################################################################
+        self.minimum_pickup_time: int = 0
         self.minimum_task_time: int = 0
 
     def is_assigned(self) -> bool:

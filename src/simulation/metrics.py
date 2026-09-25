@@ -46,8 +46,18 @@ def compute_run_metrics(
         task for task_list in completed_tasks_by_agent.values() for task in task_list
     ]
 
+    # task time runs from the assignment to the drop-off, the task delay subtracts the
+    # unobstructed time from the agent's pose at assignment via the pickup to the drop-off
     task_total_times = [
-        task.completed_time - task.spawned_time
+        task.completed_time - task.assigned_time
+        for task in all_completed_tasks
+        if task.completed_time is not None
+    ]
+    task_delays = [
+        task.completed_time
+        - task.assigned_time
+        - task.minimum_pickup_time
+        - task.minimum_task_time
         for task in all_completed_tasks
         if task.completed_time is not None
     ]
@@ -94,6 +104,20 @@ def compute_run_metrics(
         if len(a_increases) > 0:
             list_agent_avg_service_increases.append(float(np.mean(a_increases)))
 
+    list_agent_cumulative_delays: List[float] = [
+        float(
+            sum(
+                task.completed_time
+                - task.assigned_time
+                - task.minimum_pickup_time
+                - task.minimum_task_time
+                for task in agent_tasks
+                if task.completed_time is not None
+            )
+        )
+        for agent_tasks in completed_tasks_by_agent.values()
+    ]
+
     n_avg_service_time_per_agent = (
         float(np.mean(list_agent_avg_service_times))
         if list_agent_avg_service_times
@@ -117,6 +141,8 @@ def compute_run_metrics(
         "Std Task Time (incl. Reallocation) (all agents)": float(
             np.std(task_total_times)
         ),
+        "Avg Task Delay (all agents)": float(np.mean(task_delays)),
+        "Std Task Delay (all agents)": float(np.std(task_delays)),
         "Total Service Time (all agents)": float(np.sum(task_service_times)),
         "Avg Service Time (all agents)": float(np.mean(task_service_times)),
         "Std Service Time (all agents)": float(np.std(task_service_times)),
@@ -127,4 +153,9 @@ def compute_run_metrics(
         "Avg Service Increase (%) (per agent mean)": float(
             n_avg_service_increase_per_agent
         ),
+        "Avg Cumulative Delay (per agent)": float(
+            np.mean(list_agent_cumulative_delays)
+        ),
+        "Std Cumulative Delay (per agent)": float(np.std(list_agent_cumulative_delays)),
+        "Gini Cumulative Delay (per agent)": float(gini(list_agent_cumulative_delays)),
     }

@@ -90,6 +90,11 @@ METRIC_NAMES = [
     "Avg Service Time Increase (%) (all agents)",
     "Avg Service Time (per agent mean)",
     "Avg Service Increase (%) (per agent mean)",
+    "Avg Task Delay (all agents)",
+    "Std Task Delay (all agents)",
+    "Avg Cumulative Delay (per agent)",
+    "Std Cumulative Delay (per agent)",
+    "Gini Cumulative Delay (per agent)",
 ]
 
 
@@ -312,19 +317,9 @@ def run_single_seed(simulation_settings):
                 len(environment.tasks),
             )
 
-        environment.time += 1
-        environment.handle_agents()
-
-        # release agents that delivered, so that they can get a new task in this step
-        environment.close_finished_tasks()
-
-        while len(environment.tasks) < len(environment.agents):
-            old_len = len(environment.tasks)
-            environment.spawn_task()
-            if old_len == len(environment.tasks):
-                break
-
-        environment.assign_open_tasks()
+        # advance the simulation by one time step
+        # (includes route execution, task assignment, and route planning)
+        environment.step()
 
         n_astar_calls += AStarPathPlanner.get_counter()
         AStarPathPlanner.reset_counter()

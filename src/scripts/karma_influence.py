@@ -3,7 +3,7 @@
 This script mirrors the core mechanics of ``karma_influence_sweep.py`` but
 targets one grid size and one agent count. It sweeps only the karma influence
 parameter (delta is fixed to 0) for four controllers: token-passing, egoistic,
-utilitarian, and trip-karma. Seeded runs are parallelized. Results are written
+utilitarian, and karma. Seeded runs are parallelized. Results are written
 to a timestamped folder under ``results/runs/`` and aggregated into a single
 ``summary.json`` stored both in that folder and in ``results/karma_influence/``
 for downstream plotting (``figures/Figure_3.py``).
@@ -27,7 +27,7 @@ from tqdm import tqdm
 from src.simulation.constants import (
     MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_UTILITARIAN,
     MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_EGOISTIC,
-    MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_TRIP_KARMA,
+    MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_KARMA,
     MAPF_CONTROLLER_DECENTRALIZED_TOKEN_PASSING,
 )
 from src.simulation.environment import Environment
@@ -89,7 +89,7 @@ CONTROLLERS = [
     MAPF_CONTROLLER_DECENTRALIZED_TOKEN_PASSING,
     MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_EGOISTIC,
     MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_UTILITARIAN,
-    MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_TRIP_KARMA,
+    MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_KARMA,
 ]
 
 
@@ -187,17 +187,7 @@ def run_single_simulation(simulation_settings: Dict[str, Any]) -> Dict[str, floa
         desc="Sim time steps",
         leave=False,
     ):
-        env.time += 1
-        env.handle_agents()
-
-        # release agents that delivered, so that they can get a new task in this step
-        env.close_finished_tasks()
-        while len(env.tasks) < len(env.agents):
-            prev_len = len(env.tasks)
-            env.spawn_task()
-            if prev_len == len(env.tasks):
-                break
-        env.assign_open_tasks()
+        env.step()
         n_astar_calls += AStarPathPlanner.get_counter()
         AStarPathPlanner.reset_counter()
 

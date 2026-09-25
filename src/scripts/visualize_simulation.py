@@ -115,25 +115,11 @@ while environment.time < environment.settings["time_simulation_duration"]:
         len(environment.tasks),
     )
 
-    # general update
-    environment.time += 1
-
-    # handle agents
     previous_positions = {a.id: list(a.current_position) for a in environment.agents}
-    environment.handle_agents()
 
-    # release agents that delivered, so that they can get a new task in this step
-    closed = environment.close_finished_tasks()
-
-    # # spawn tasks randomly
-    while len(environment.tasks) < len(environment.agents):
-        n = len(environment.tasks)
-        environment.spawn_task()
-        if n == len(environment.tasks):
-            break
-
-    # handle tasks
-    environment.assign_open_tasks()
+    # advance the simulation by one time step
+    # (includes route execution, task assignment, and route planning)
+    environment.step()
 
     # visualize
     os.makedirs(FRAMES_DIR, exist_ok=True)
