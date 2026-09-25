@@ -1,4 +1,5 @@
 from __future__ import annotations
+from collections import Counter
 from typing import Union, List, Optional, Tuple, Dict, Any, Callable, TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -34,6 +35,7 @@ class Environment:
         self.completed_tasks: dict[int, List[Task]] = (
             {}
         )  # mapping: agent_id -> list of completed tasks
+        self.negotiation_cases: Counter[str] = Counter()
 
     def determine_new_id(self, lst: Union[List[Agent], List[Task]]) -> int:
         last_id = 0
@@ -102,11 +104,27 @@ class Environment:
 
         return len(finished_tasks) > 0
 
-    def handle_agents(self) -> None:
-        # ROUTE EXECTUION: update agent target and status
-        self.handle_agents_route_execution()
+    def step(self) -> None:
+        self.time += 1
+        self.handle_agents_route_execution()  # route execution (update agent target and status)
 
-        # ROUTE PLANNING: for those who need
+        # release agents that delivered, so that they can get a new task in this step
+        self.close_finished_tasks()
+
+        # keep spare tasks so that idle agents always find an open task, also when the
+        # assignment reserves some for agents that are about to deliver
+        while (
+            len([t for t in self.tasks if not t.is_assigned()])
+            < (len(self.agents) + 1) // 2
+        ):
+            n_tasks = len(self.tasks)
+            self.spawn_task()
+            if n_tasks == len(self.tasks):
+                break
+
+        self.assign_open_tasks()
+
+        # handle route planning
         if self.settings["mapf_control"] == MAPF_CONTROLLER_CENTRALIZED:
             self.handle_agents_route_planning_centralized()
         elif (
@@ -475,6 +493,13 @@ class Environment:
 
                 if self.settings["debug_statements"]:
                     print("\t\t Outcome", other_resolves_conflict)
+
+                self.negotiation_cases[
+                    f"{'idle' if conflicting_agent.is_idle() else 'busy'} other, "
+                    f"self {'infeasible' if change_cost_mine == COST_TO_CHANGE_INFEASIBLE else 'feasible'}, "
+                    f"other {'infeasible' if alternative_path_other is None else 'feasible'}, "
+                    f"{'other' if other_resolves_conflict else 'self'} yields"
+                ] += 1
 
                 if other_resolves_conflict and alternative_path_other is not None:
                     conflicting_agent.change_path_to_satisfy(

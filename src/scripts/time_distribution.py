@@ -42,8 +42,8 @@ simulation_settings = {
     # "mapf_control": MAPF_CONTROLLER_DECENTRALIZED_TOKEN_PASSING,
     # "mapf_control": MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_EGOISTIC,
     # "mapf_control": MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_UTILITARIAN,
-    # "mapf_control": MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_KARMA,
-    "mapf_control": MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_TRIP_KARMA,
+    "mapf_control": MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_KARMA,
+    # "mapf_control": MAPF_CONTROLLER_DECENTRALIZED_NEGOTIATE_TRIP_KARMA,
     "time_horizon_visualization": 10,
     "time_simulation_duration": 100,
     "params_astar": {
@@ -121,26 +121,12 @@ def run_single_seed(seed):
             len(environment.tasks),
         )
 
-        environment.time += 1
-
-        previous_positions = {
-            a.id: list(a.current_position) for a in environment.agents
-        }
-        environment.handle_agents()
-
-        # release agents that delivered, so that they can get a new task in this step
-        environment.close_finished_tasks()
+        # advance the simulation by one time step
+        # (includes route execution, task assignment, and route planning)
+        environment.step()
 
         # Uncomment for conflict debugging if needed.
         # check_violation(environment, previous_positions)
-
-        while len(environment.tasks) < len(environment.agents):
-            n = len(environment.tasks)
-            environment.spawn_task()
-            if n == len(environment.tasks):
-                break
-
-        environment.assign_open_tasks()
 
         print("\tA-Star Calls:", AStarPathPlanner.get_counter())
         AStarPathPlanner.reset_counter()
@@ -149,11 +135,11 @@ def run_single_seed(seed):
     seed_service_times = []
     for agent in environment.completed_tasks:
         for task in environment.completed_tasks[agent]:
-            if task.completed_time is not None:
-                task_time = task.completed_time - task.spawned_time + 1
+            if task.completed_time is not None and task.assigned_time is not None:
+                task_time = task.completed_time - task.assigned_time
                 seed_task_times.append(task_time)
                 if task.pickup_time is not None:
-                    service_time = task.completed_time - task.pickup_time + 1
+                    service_time = task.completed_time - task.pickup_time
                     seed_service_times.append(service_time)
 
     return seed_task_times, seed_service_times

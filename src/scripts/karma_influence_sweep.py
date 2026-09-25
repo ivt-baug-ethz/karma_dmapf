@@ -108,6 +108,11 @@ METRICS_OF_INTEREST = [
     "Avg Service Time Increase (%) (all agents)",
     "Avg Service Time (per agent mean)",
     "Avg Service Increase (%) (per agent mean)",
+    "Avg Task Delay (all agents)",
+    "Std Task Delay (all agents)",
+    "Avg Cumulative Delay (per agent)",
+    "Std Cumulative Delay (per agent)",
+    "Gini Cumulative Delay (per agent)",
 ]
 
 # Focused metric sets to keep figure counts small and targeted
@@ -195,17 +200,7 @@ def run_single_simulation(simulation_settings: Dict[str, Any]) -> Dict[str, floa
         total=env.settings["time_simulation_duration"],
         desc="Sim time steps",
     ):
-        env.time += 1
-        env.handle_agents()
-
-        # release agents that delivered, so that they can get a new task in this step
-        env.close_finished_tasks()
-        while len(env.tasks) < len(env.agents):
-            prev_len = len(env.tasks)
-            env.spawn_task()
-            if prev_len == len(env.tasks):
-                break
-        env.assign_open_tasks()
+        env.step()
         n_astar_calls += AStarPathPlanner.get_counter()
         AStarPathPlanner.reset_counter()
 

@@ -75,6 +75,11 @@ dates, before/after states); git records that.
   pandas' inline types instead and additionally flags the tuple unpack of `groupby` keys in
   `karma_influence_sweep.py` ("Hashable is not iterable"); that one is accepted, not cast away.
   Prefer `df.loc[mask]` over `df[mask]` for boolean row filters: it types as a DataFrame under both.
+  To reproduce Pylance from the CLI, give pyright the pandas stubs it bundles: `pip install --target
+  <scratch>/stubs pandas-stubs`, symlink `<scratch>/stubs/pandas` → `pandas-stubs`, and run
+  `npx pyright -p <scratch>/pyrightconfig.json src figures` with a config that adds
+  `"stubPath": "<scratch>/stubs"` and `"extraPaths": ["<repo>", "<repo>/figures"]` to the repo's
+  `pyrightconfig.json` keys. It must report 0 errors (verified 2026-09-25).
 
 ## Commits
 

@@ -90,21 +90,9 @@ for random_seed in range(41, 51):
             len(environment.tasks),
         )
 
-        # general update
-        environment.time += 1
-
-        # handle agents
-        environment.handle_agents()
-
-        # release agents that delivered, so that they can get a new task in this step
-        closed = environment.close_finished_tasks()
-
-        # # spawn tasks randomly
-        if len(environment.tasks) < len(environment.agents):
-            environment.spawn_task()
-
-        # handle tasks
-        environment.assign_open_tasks()
+        # advance the simulation by one time step
+        # (includes route execution, task assignment, and route planning)
+        environment.step()
 
         # report A-STAR Calls
         n_astar_calls += AStarPathPlanner.get_counter()
