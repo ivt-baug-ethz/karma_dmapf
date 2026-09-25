@@ -13,7 +13,7 @@ to the git-ignored `results/runs/`. The figure number is the only numbering; the
 | `time_distribution.py` | one controller × one scenario, seeds 41–50, sequential | `time_distribution/all_{task,service}_times_{CTRL}_{grid}_{agents}.txt` | `Figure_2.py` → `Figure_2.png` | Fig. 5 (box plots) |
 | `karma_influence.py` | 4 paper controllers × τ 0.0–1.0 × seeds 41–60, one scenario, `multiprocessing.Pool` | `karma_influence/summary_grid{g}_agents{n}_T100.json` (+ per-seed JSONs in `runs/karma_influence_<ts>/`) | `Figure_3.py` → `Figure_3.png` | Fig. 4 (service-time increase vs τ) |
 | `karma_influence_tradeoffs.py` | same as karma_influence but all `compute_run_metrics` metrics, `ProcessPoolExecutor` | `karma_influence_tradeoffs/summary_grid{g}_agents{n}_T100.json` (+ `runs/karma_influence_tradeoffs_<ts>/`) | `Figure_4.py` → `Figure_tradeoff_<metric>.png/.pdf` | not in paper (supplementary) |
-| `karma_influence_sweep.py` | legacy τ × δ sweep incl. KARMA / UTILITARIAN2, T=1000, plots its own figures | nothing (`runs/karma_influence_sweep/`) | none | – |
+| `karma_influence_sweep.py` | legacy τ × δ sweep incl. KARMA, T=1000, plots its own figures | nothing (`runs/karma_influence_sweep/`) | none | – |
 
 Other entry points: `visualize_simulation.py` writes `results/animations/animation_<CTRL>.gif` (tracked)
 from frames in `results/runs/visualize_simulation/`; `performance_tracking.py` only prints.
@@ -27,7 +27,7 @@ from frames in `results/runs/visualize_simulation/`; `performance_tracking.py` o
   (`mem:open_issues`).
 - `karma_influence` keeps its own copy of `gini/summarize/compute_run_metrics` (service-time
   increase only). The others import `src.simulation.metrics`.
-- `results/time_distribution` also holds `KARMA` / `UTILITARIAN2` files. They have the same format
+- `results/time_distribution` also holds `KARMA` files. They have the same format
   and the script still produces them when that controller is selected, but no figure reads them.
   A former `..._TOLERANCES.json` of karma_influence came from a code variant that no longer exists
   and is in `results/archive/`.

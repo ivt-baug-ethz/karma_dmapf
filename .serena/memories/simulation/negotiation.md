@@ -6,10 +6,9 @@
 |---|---|---|---|
 | `DECENTRALIZED_TOKEN_PASSING` | Token Passing | plan around all committed routes, no negotiation | yes |
 | `DECENTRALIZED_NEGOTIATE_EGOISTIC` | Egoistic (Eq. 2) | other replans iff Δ_other ≤ 0 | yes |
-| `DECENTRALIZED_NEGOTIATE_UTILITARIAN` | Utilitarian (Eq. 3) | smaller Δ replans, tie random (`env.rng`) | yes |
+| `DECENTRALIZED_NEGOTIATE_UTILITARIAN` | Utilitarian (Eq. 3) | Δ_mine = `inf` → other replans (an idle one parks); else smaller Δ replans, tie random (`env.rng`) | yes |
 | `DECENTRALIZED_NEGOTIATE_TRIP_KARMA` | **Karma** (Eq. 5/6) | karma rule, balance reset on every pickup | yes |
 | `DECENTRALIZED_NEGOTIATE_KARMA` | – | karma rule, balance never reset | no (only analysis_2 logs + legacy sweep) |
-| `DECENTRALIZED_NEGOTIATE_EGOISTIC2` / `UTILITARIAN2` | – | egoistic/utilitarian on the relative-deviation cost transform | no (UTILITARIAN2 only in analysis_2 logs + legacy sweep) |
 | `CENTRALIZED` | CBS (§II-B only) | `Planner_CBS` (`mem:simulation/core`) | no |
 
 The figures use a fixed label and style for each paper controller. Colours (Okabe-Ito) plus
@@ -34,15 +33,20 @@ For each non-idle agent i with an empty route and a target:
    the other's path, incl. resting on its end cell) − current route length. The avoided path is
    written into the reservation grid **only in free cells**. Overwriting the ids of other agents would
    break A*'s swap check, which needs the same id on both cells, and would let edge conflicts through. 
-   - No alternative: `COST_TO_CHANGE_INFEASIBLE` (`inf`, `constants.py`).
+   - No alternative: `COST_TO_CHANGE_INFEASIBLE` (`constants.py`), written `inf` below. It is
+     `sys.maxsize`, not `float("inf")`, so Δ, payments and balances stay `int`. It is only ever compared
+     (forced branches first, never paid), so it behaves exactly like `inf` (verified bit-identical).
    - Idle agent: Δ is its **real parking detour**, or `inf` without a parking path.
    - `Environment.make_decision` passes `inf` for an idle other agent to the rules without agent
-     parameters. Egoistic, utilitarian and `*2` therefore behave exactly as with the former `1000`
+     parameters. Egoistic and utilitarian therefore behave exactly as with the former `1000`
      (verified task-by-task identical).
 5. `negotiation_function(cost_other, cost_mine[, agents, params_karma])` returns **True = the other
    (conflicting) agent replans**. Then the other agent adopts its alternative path immediately.
    Otherwise the other agent is added to `considered`. If the other agent has no alternative path,
    the result is always False.
+   The result is named `other_resolves_conflict` in every rule and in the loop. Ties are broken with
+   the seeded `env.rng` only: `negotiate_utilitarian` takes it as a required `rng` argument (no global
+   `np.random` fallback), Karma uses `agent_self.environment.rng`.
 6. Loop for at most `max(10, 2·n_agents)` iterations. If that fails, or A* returns None, fall back to
    `plan_route_decentralized_token_passing`.
 
@@ -51,13 +55,14 @@ For each non-idle agent i with an empty route and a target:
 ## Karma (`NegotiationStrategy.negotiate_karma`)
 
 - Adjusted cost = Δ + τ·k, where τ = `params_karma["karma_influence"]` and k = `agent.karma_balance`
-  (int, starts at `initial_karma` = **20** in every script; trip Karma resets to it).
+  (`int`, like every Δ it is paid in; starts at `initial_karma` = **20** in every script; trip Karma resets to it).
 - Forced decisions come first and skip the karma comparison:
   - Δ_mine = `inf` (i cannot avoid j) → j gives way. An idle j steps aside to its parking cell.
   - j idle and Δ_mine finite → i gives way. An idle agent has no task to delay and does not give way.
 - Otherwise: `adj_mine − adj_other > delta_threshold` → other replans; `<` → self replans; `==` → random.
   `delta_threshold` is **not in the paper**. All committed runs use 0, which is exactly Eq. 5
-  (τ = 0 ≡ utilitarian). A non-zero value makes the rule asymmetric.
+  (τ = 0 ≡ utilitarian, bit-identical with and without the reset: utilitarian uses the same
+  `inf`-first rule). A non-zero value makes the rule asymmetric.
 - Payment (`_karma_payment_rule`, rule 3 = paper Eq. 6): the replanner receives its own Δ and the
   winner pays the same amount (zero-sum, pay-to-peer).
   - The payment is `max(0, Δ_yielder)`, so it is never negative.
@@ -76,11 +81,17 @@ For each non-idle agent i with an empty route and a target:
   on the literal string `"DECENTRALIZED_NEGOTIATE_TRIP_KARMA"` rather than the constant.
 - Paper τ used for the benchmark figures: 0.5. The sweep covers τ ∈ {0.0, 0.1, …, 1.0}.
 
-## Cost transform (`cost_transform=True`, the `*2` controllers)
+## Why Δ stays in raw time steps (removed `*2` controllers)
 
-Δ becomes the change in realised/minimal cost ratio: (forecast + Δ)/min − forecast/min, using
-`minimal_path_cost` and `get_forecasted_path_total_cost`. It is skipped when the other agent has no
-`minimal_path_cost`.
+`EGOISTIC2` / `UTILITARIAN2` (and `minimal_path_cost`, `get_forecasted_path_total_cost`) were removed
+on 2026-09-25. Their cost transform (forecast + Δ)/min − forecast/min reduces to Δ / min_task_length:
+- EGOISTIC2 was bit-identical to EGOISTIC (the sign of Δ is unchanged).
+- UTILITARIAN2 protected short tasks: slightly lower mean %-increase, but higher service-time std,
+  higher per-agent cumulative-delay Gini and +13 % A* calls on 10×10/30.
+
+Raw Δ is the Karma currency: balances carry across tasks without a reset, and one unit must mean the
+same time on every task. It also keeps utilitarian ≡ Karma at τ = 0. Do not reintroduce a per-task
+normalisation of Δ.
 
 ## Semantics to keep straight
 

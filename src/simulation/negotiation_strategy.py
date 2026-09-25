@@ -1,6 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Any, Optional
-import numpy as np
+from typing import TYPE_CHECKING, Any
 from src.simulation.constants import COST_TO_CHANGE_INFEASIBLE
 
 if TYPE_CHECKING:
@@ -9,39 +8,40 @@ if TYPE_CHECKING:
 
 class NegotiationStrategy:
     """
-    Decide whether 'other' agent should change
-    (agreement_to_solve_conflict = True) means other agent replans
+    Decide which agent resolves the conflict. cost_mine is the detour of the initiating agent,
+    cost_other the one of the conflicting agent. other_resolves_conflict = True means the
+    conflicting agent replans, False means the initiating agent replans
     """
 
     @staticmethod
     def negotiate_egoistic(cost_other: int, cost_mine: int) -> bool:
-        agreement_to_solve_conflict: bool
+        other_resolves_conflict: bool
         if cost_other <= 0:
-            agreement_to_solve_conflict = True
+            other_resolves_conflict = True
         else:
-            agreement_to_solve_conflict = False
-        return agreement_to_solve_conflict
+            other_resolves_conflict = False
+        return other_resolves_conflict
 
     @staticmethod
-    def negotiate_utilitarian(
-        cost_other: int, cost_mine: int, rng: Optional[Any] = None
-    ) -> bool:
+    def negotiate_utilitarian(cost_other: int, cost_mine: int, rng: Any) -> bool:
         # who is worse off?
-        agreement_to_solve_conflict: bool
-        if cost_mine > cost_other:
-            agreement_to_solve_conflict = True
+        other_resolves_conflict: bool
+        if cost_mine == COST_TO_CHANGE_INFEASIBLE:
+            # this agent cannot avoid the other agent, so the other agent has to resolve the conflict
+            # (an idle other agent steps aside to its parking position)
+            other_resolves_conflict = True
+        elif cost_mine > cost_other:
+            other_resolves_conflict = True
         elif cost_mine < cost_other:
-            agreement_to_solve_conflict = False
+            other_resolves_conflict = False
         else:  # cost_mine == cost_other
-            if rng is None:
-                rng = np.random
-            agreement_to_solve_conflict = bool(rng.choice([True, False]))
-        return agreement_to_solve_conflict
+            other_resolves_conflict = bool(rng.choice([True, False]))
+        return other_resolves_conflict
 
     @staticmethod
     def _karma_payment_rule(
-        cost_mine: float, cost_other: float, other_resolves_conflict: bool, karma_params
-    ) -> float:
+        cost_mine: int, cost_other: int, other_resolves_conflict: bool, karma_params
+    ) -> int:
         # RULE 1: fixed payment
         # payment = karma_params["karma_payment"]
 
@@ -64,8 +64,8 @@ class NegotiationStrategy:
 
     @staticmethod
     def negotiate_karma(
-        cost_other: float,
-        cost_mine: float,
+        cost_other: int,
+        cost_mine: int,
         agent_other: Agent,
         agent_self: Agent,
         karma_params,
