@@ -51,7 +51,7 @@ simulation_settings = {
     "params_karma": {
         "initial_karma": 20,
         "delta_threshold": 0,
-        "karma_influence": 0.5,
+        "karma_influence": 0.15,
     },
     "debug_statements": False,
 }

@@ -26,6 +26,13 @@ Not a library: there is no `pyproject.toml` / `setup.py`, nothing is installed, 
 | `figures/paper_style.py` | the shared controller colours, markers and hatches (colour-blind and greyscale safe) |
 | `results/<analysis>/` | committed analysis outputs, i.e. the figure inputs; one folder per analysis script, named after it |
 | `results/animations/` | committed README GIFs; `visualize_simulation` writes here |
+| `TO_FIX.md` | user-requested list of confirmed bugs and data problems, ordered by priority (issue + what to do per item). Fix nothing from it unasked. |
+| `TO_EXPLORE.md` | user-requested list of open evaluation questions and ideas (issue + what to do per item). |
+| `exploration_plans/`, `exploration_code/`, `EXPLORATION_FINDINGS.md` | one plan, one code snapshot and one findings paragraph per `TO_EXPLORE.md` item; git-excluded, never committed. Hand-off document: `mem:explorations` (file map, protocol, per-item status, open questions). |
+
+Both lists exist by explicit user request despite the "no parallel tracking stores" rule. Keep them short, and remove items once they are resolved.
+| `KARMA_TUNING.md` | uncommitted experiment log of the 2026-09-26 Karma tuning (one table row per experiment, results, runtimes, negotiation cases); its harness and raw runs are in the git-ignored `results/archive/karma_tuning/` |
+| `BUG_REPORTS.md` | uncommitted list of the **open** simulation bugs (#7–#9) with symptom, cause, suggested fix and a replayable example; fixed bugs keep their numbers in `mem:paper_changes` (replay scripts and GIFs in the git-ignored `results/archive/bug_reports/`) |
 | `results/runs/` | git-ignored; every script's automatic intermediate output (per-seed JSONs, txt reports, GIF frames, sweep cache) |
 | `results/archive/` | git-ignored; manual copies of old runs, incl. everything the old `results/` scratch held |
 
@@ -85,6 +92,9 @@ Not a library: there is no `pyproject.toml` / `setup.py`, nothing is installed, 
   - what each analysis runs and writes, and the `results/` filename schema
   - which figure reads what, and which paper figure it is
   - metric definitions and key paper findings
+- `mem:paper_changes`: every simulation fix, parameter change and data regeneration since the
+  paper's figures, with commits, evidence and the findings to report. Read it before touching the
+  paper text or regenerating results.
 - `mem:open_issues`: known bugs and planned refactors (shared simulation runner, controller support).
 - `mem:tech_stack`: interpreter and pinned dependencies.
 - `mem:conventions`: code style, imports, script layout, figure-script CLI, lint rules, commits.

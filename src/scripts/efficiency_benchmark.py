@@ -36,7 +36,7 @@ os.makedirs(RESULTS_DIR, exist_ok=True)
 os.makedirs(LOG_DIR, exist_ok=True)
 
 
-random_seeds = range(41, 51)
+random_seeds = range(41, 46)
 grid_sizes = [5]  # , 10, 15, 20]
 
 controllers = [
@@ -73,7 +73,7 @@ base_simulation_settings = {
     "params_karma": {
         "initial_karma": 20,
         "delta_threshold": 0,
-        "karma_influence": 0.5,
+        "karma_influence": 0.15,
     },
     "debug_statements": False,
 }

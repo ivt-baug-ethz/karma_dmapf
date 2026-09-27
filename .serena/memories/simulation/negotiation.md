@@ -51,7 +51,9 @@ For each non-idle agent i with an empty route and a target:
    stopped completing trips). Safety net: agents that gave way did so assuming i leaves its cell,
    so if i ends the step without a route (negotiation and token-passing fallback both failed), the
    loop restores their previous routes (`yielded_routes`), which were planned with i resting there.
-   Without it the fix produced vertex collisions (1 of 12 runs on 10×10/30). The avoided path is
+   Without it the fix produced vertex collisions (1 of 12 runs on 10×10/30). The final code passes
+   `check_violation` (vertex + swap) in 92 of 92 smoke runs (all negotiation controllers,
+   5×5/10 and 10×10/30, T = 300). The avoided path is
    written into the reservation grid **only in free cells**. Overwriting the ids of other agents would
    break A*'s swap check, which needs the same id on both cells, and would let edge conflicts through. 
    - No alternative: `COST_TO_CHANGE_INFEASIBLE` (`constants.py`), written `inf` below. It is
@@ -111,8 +113,28 @@ For each non-idle agent i with an empty route and a target:
   `params_karma["karma_payment"]` (present only in the legacy sweep settings).
 - The per-trip reset (`TRIP_KARMA` only) happens in `Agent.assign_task` / `Agent.update_target_position`
   at pickup, keyed on the literal string `"DECENTRALIZED_NEGOTIATE_TRIP_KARMA"` rather than the constant.
-- Paper τ used for the benchmark figures: 0.5. The sweep covers τ ∈ {0.0, 0.1, …, 1.0};
-  `delay_evaluation` runs τ ∈ {0.1, 0.25, 0.5, 0.75, 0.9}. Explorations put the no-reset optimum at τ ≈ 0.1–0.25.
+- Paper τ used for the fixed-τ analyses: **0.15**, initial karma 20, winner pays the loser's Δ
+  (tuned 2026-09-26 on the fixed code; 5×5/10 and 10×10/30, T = 300, seeds 41–60).
+  The sweep covers τ ∈ {0.0, 0.1, …, 1.0}; `delay_evaluation` runs τ ∈ {0.1, 0.15, 0.25, 0.5, 0.75}.
+  Tuning result on the final code v6 (all id biases and deadlocks fixed, seeds 41–60, E38 in
+  `KARMA_TUNING.md`): the across-agent std of cumulative delay is 0.89× utilitarian's on
+  10×10/30 (+4.4 % mean task delay) and 0.97× on 5×5/10 (+7.5 %). Most of the larger gains
+  measured on the older code came from Karma compensating the simulation's id biases.
+  Egoistic: 0.93× (+1 %) and 1.20× (+23 %). A harness-only "society" rule does better:
+  0.80×/0.83× at +3–4 %. The yielder is paid its Δ by all agents in equal shares, and the
+  winner pays nothing. It changes Eq. 6, so adopting it is the authors' call.
+  Held-out seeds 61–80 (E39) confirm both results. At T = 1000 (E41) the society rule keeps
+  0.84×/0.78× (+0–4 %), while the tracked rule drops to 0.95×/0.84×. Balances stay in 5–39.
+  - τ = 0.1 is similar on average but generalises worse to seeds 51–60.
+  - τ ≥ 0.25, first price (winner pays its own Δ) and karma-game bid policies are worse.
+  - Balances stay in about 6–34 (std ≈ 6.5, saturating), are never clipped, and correlate only
+    weakly with cumulative delay (+0.1). A balance counts detours absorbed minus detours imposed
+    on others, and the latter carry no information about the agent's own delay.
+  - The initial karma only matters through the zero floor: once no payment is clipped, runs
+    with different initial karma are bit-identical (only balance differences enter the rule).
+  - Trip-reset Karma does not reduce the per-trip delay spread (0.97–0.98×).
+  - Full experiment table, incl. payment-rule variants not in the code: `KARMA_TUNING.md` at
+    the repo root (uncommitted).
 
 ## Negotiation case counters
 

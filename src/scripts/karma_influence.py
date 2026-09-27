@@ -46,7 +46,7 @@ GRID_SIZE = 5  # base grid size (without +2 padding) - values: 5, 10, 15
 N_AGENTS = 10  # values: 10, 30, 80
 DELTA_THRESHOLD = 0
 INFLUENCES = [round(x * 0.1, 1) for x in range(0, 11)]
-SEEDS = list(range(41, 61))
+SEEDS = list(range(41, 46))
 TIME_SIMULATION_DURATION = 100
 SUMMARY_FILENAME = (
     f"summary_grid{GRID_SIZE}_agents{N_AGENTS}_T{TIME_SIMULATION_DURATION}.json"
@@ -80,7 +80,7 @@ BASE_SIMULATION_SETTINGS: Dict[str, Any] = {
     "params_karma": {
         "initial_karma": 20,
         "delta_threshold": DELTA_THRESHOLD,
-        "karma_influence": 0.5,
+        "karma_influence": 0.15,
     },
     "debug_statements": False,
 }

@@ -27,7 +27,7 @@ from src.simulation.constants import (
 ###### PARAMETERS #############################################################
 ###############################################################################
 
-random_seeds = [n for n in range(41, 51)]
+random_seeds = [n for n in range(41, 46)]
 
 # outputs are anchored at the repository root, independent of the working directory
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -59,7 +59,7 @@ simulation_settings = {
     "params_karma": {
         "initial_karma": 20,
         "delta_threshold": 0,
-        "karma_influence": 0.5,
+        "karma_influence": 0.15,
     },
     "debug_statements": False,
 }

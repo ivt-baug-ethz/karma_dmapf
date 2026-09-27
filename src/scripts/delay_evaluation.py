@@ -46,8 +46,8 @@ logger = logging.getLogger(__name__)
 # Global knobs (edit here for reproducibility)
 SCENARIOS = [(5, 10), (10, 30)]  # (base grid size without +2 padding, agents)
 DELTA_THRESHOLD = 0
-INFLUENCES = [0.1, 0.25, 0.5, 0.75, 0.9]
-SEEDS = list(range(41, 51))
+INFLUENCES = [0.1, 0.15, 0.25, 0.5, 0.75]
+SEEDS = list(range(41, 46))
 TIME_SIMULATION_DURATION = 300
 
 
@@ -76,7 +76,7 @@ BASE_SIMULATION_SETTINGS: Dict[str, Any] = {
     "params_karma": {
         "initial_karma": 20,
         "delta_threshold": DELTA_THRESHOLD,
-        "karma_influence": 0.5,
+        "karma_influence": 0.15,
     },
     "debug_statements": False,
 }
@@ -107,7 +107,7 @@ def run_single_simulation(
     AStarPathPlanner.reset_counter()
     env = Environment(settings=simulation_settings)
 
-    for _ in range(2 * simulation_settings["n_agents"]):
+    for _ in range(simulation_settings["n_agents"]):
         env.spawn_agent()
 
     n_astar_calls = 0

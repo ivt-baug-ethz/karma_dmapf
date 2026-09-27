@@ -13,12 +13,29 @@ to the git-ignored `results/runs/`. The figure number is the only numbering; the
 | `time_distribution.py` | one controller × one scenario, seeds 41–50, sequential | `time_distribution/all_{task,service}_times_{CTRL}_{grid}_{agents}.txt` | `Figure_2.py` → `Figure_2.png` | Fig. 5 (box plots) |
 | `karma_influence.py` | 4 paper controllers × τ 0.0–1.0 × seeds 41–60, one scenario, `multiprocessing.Pool` | `karma_influence/summary_grid{g}_agents{n}_T100.json` (+ per-seed JSONs in `runs/karma_influence_<ts>/`) | `Figure_3.py` → `Figure_3.png` | Fig. 4 (service-time increase vs τ) |
 | `karma_influence_tradeoffs.py` | same as karma_influence but all `compute_run_metrics` metrics, `ProcessPoolExecutor` | `karma_influence_tradeoffs/summary_grid{g}_agents{n}_T100.json` (+ `runs/karma_influence_tradeoffs_<ts>/`) | `Figure_4.py` → `Figure_tradeoff_<metric>.png/.pdf` | not in paper (supplementary) |
-| `delay_evaluation.py` | 4 paper controllers (Karma = `NEGOTIATE_KARMA` at τ 0.1/0.25/0.5/0.75/0.9, baselines once) × 5×5/10 + 10×10/30, seeds 41–50, T=300, `ProcessPoolExecutor`, ≈ 9 min on 16 cores; prints metric means and `negotiation_cases` totals | `delay_evaluation/tasks_grid{g}_agents{n}_T300.json` (metadata, summary rows, per-run metrics + `negotiation_cases` + per-task records `[agent_id, assigned, pickup, completed, min_pickup, min_task]`; + `runs/delay_evaluation_<ts>/`) | `Figure_5.py` → `Figure_5.png` | not yet (evaluation of the no-reset Karma and the delay metrics) |
+| `delay_evaluation.py` | 4 paper controllers (Karma = `NEGOTIATE_KARMA` at τ 0.1/0.15/0.25/0.5/0.75, baselines once) × 5×5/10 + 10×10/30, seeds 41–45, T=300, `ProcessPoolExecutor`; prints metric means and `negotiation_cases` totals | `delay_evaluation/tasks_grid{g}_agents{n}_T300.json` (metadata, summary rows, per-run metrics + `negotiation_cases` + per-task records `[agent_id, assigned, pickup, completed, min_pickup, min_task]`; + `runs/delay_evaluation_<ts>/`) | `Figure_5.py` → `Figure_5.png` | not yet (evaluation of the no-reset Karma and the delay metrics) |
 | `karma_influence_sweep.py` | legacy τ × δ sweep incl. both Karma variants, T=1000, plots its own figures | nothing (`runs/karma_influence_sweep/`) | none | – |
 
 Other entry points: `visualize_simulation.py` writes `results/animations/animation_<CTRL>.gif` (tracked)
 from frames in `results/runs/visualize_simulation/`; `performance_tracking.py` only prints.
 
+- Seeds are temporarily reduced to 41–45 in every analysis script (efficiency_benchmark,
+  time_distribution, karma_influence, tradeoffs, delay_evaluation) for the 2026-09-27
+  regeneration; the final paper numbers are to be run at 10 seeds (41–50; 41–60 for the τ sweeps).
+- Measured wall times at 5 seeds, T = 100, 11 parallel jobs: efficiency_benchmark per
+  controller: 5×5 13–35 s, 10×10 2–8 min, 15×15 11–22 min (egoistic 15×15: 100 min, the
+  bottleneck). time_distribution per controller: 15×15/80 6–17 min (egoistic ≈ 55 min).
+  karma_influence 15×15 ≈ 35 min with 5 workers.
+- Gotcha: `karma_influence` / `karma_influence_tradeoffs` name their per-seed folder
+  `results/runs/<script>_<YYYYmmdd_HHMMSS>` and combine *every* `seed*.json` in it. Two
+  scenarios started in the same second therefore mix, which shows up as a zig-zag in Figure 3.
+  Start parallel sweeps at least a second apart, or rebuild each summary from the per-seed files
+  filtered by `agents{N}`.
+- Throttling many single-core invocations from a zsh script: `jobs -r` is empty in a
+  non-interactive zsh, so a `while (( $(jobs -r | wc -l) >= N ))` loop never waits. Use
+  `xargs -P N` instead.
+- Worker count: run the pooled scripts with `PYTHON_CPU_COUNT=12` (Python 3.13 honours it in
+  `os.cpu_count()`), so at most 12 cores are used.
 - The scripts are configured by editing module-level constants or the settings dict. There is no CLI.
   One scenario (time_distribution, karma_influence, tradeoffs) or one controller list
   (efficiency_benchmark) runs per invocation, so regenerating a figure means one run per grid
@@ -28,10 +45,9 @@ from frames in `results/runs/visualize_simulation/`; `performance_tracking.py` o
   (`mem:open_issues`).
 - `karma_influence` keeps its own copy of `gini/summarize/compute_run_metrics` (service-time
   increase only). The others import `src.simulation.metrics`.
-- The analyses and Figures 1–4 use `NEGOTIATE_KARMA` (no reset) as Karma. The committed
-  `results/` still hold `TRIP_KARMA` files/series from the old runs (plus a few old `KARMA` time
-  distribution files): Figures 1 and 2 fail on the missing files and Figures 3 and 4 render
-  without a Karma series until the analyses are regenerated.
+- The analyses and Figures 1–4 use `NEGOTIATE_KARMA` (no reset) as Karma. Since the 2026-09-27 regeneration every figure input exists
+  for it. Stale `TRIP_KARMA` files from old runs are still in `efficiency_benchmark/` and
+  `time_distribution/`, unused.
   A former `..._TOLERANCES.json` of karma_influence came from a code variant that no longer exists
   and is in `results/archive/`.
 
@@ -87,18 +103,11 @@ efficiency_benchmark JSON: `{grid: {CTRL: {n_agents: {metric: [mean, std, median
 
 ## Key paper findings (for sanity-checking regenerated data)
 
-**The committed `results/` and the numbers below predate these simulation fixes:**
-- swap detection in `determine_cost_to_change`
-- pickups registered on pass-over
-- A* optimality
-- the step order (release before assign)
-- the karma rule with `inf` bids, payments clipped at 0 and limited to the payer's balance, and
-  `initial_karma` = 20
-
-Regenerated data will differ: throughput is higher (about +5–15% completions from the fixes so far),
-and every negotiation controller is affected. Some committed files also do not reproduce from any code
-version (`TO_FIX.md` item 1). So use the numbers below only as a rough orientation, not as exact
-targets.
+**The numbers below are the original paper's.** They predate every fix in `mem:paper_changes`
+(swap detection, pickups on pass-over, A* optimality, step order, the karma payment rules,
+deadlock and id-bias fixes). The tracked `results/` were regenerated from the code on 2026-09-27
+at 5 seeds, so they differ from these numbers. Throughput is higher, and every negotiation
+controller is affected. Use the numbers below only as a rough orientation, not as exact targets.
 
 - **Token passing**: fewest A* calls, fewest completed tasks, longest service time. At 15×15/80 it
   completes about 1.9k tasks with about 3k A* calls.

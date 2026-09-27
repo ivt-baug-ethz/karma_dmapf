@@ -36,6 +36,18 @@ uvx --from git+https://github.com/oraios/serena serena memories check   # dangli
 uvx --from git+https://github.com/oraios/serena serena project index    # refresh symbol cache
 ```
 
+## Stopping pooled runs
+
+Killing the parent of a `ProcessPoolExecutor` / `multiprocessing.Pool` leaves its spawned workers
+running as orphans (parent PID 1) until their current job ends, which can be hours on 15×15. After
+a kill, check and clean up:
+
+```bash
+ps -Ao pid,ppid,command | awk '$2 == 1 && /multiprocessing.spawn/'   # orphaned workers
+```
+
+Busy-core count: `ps -Ao %cpu,command | awk '/Python/ && $1 > 20' | wc -l`.
+
 ## Darwin-specific
 
 `stat` is BSD: `stat -f %m file` (not `stat -c %Y`). The `.claude/hooks/*.sh` scripts rely on this.
