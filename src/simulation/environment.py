@@ -306,6 +306,10 @@ class Environment:
         current_path_cost = len(current_path)
         conflict_costs = []
 
+        # the sort below is stable, so equally costly conflicts are taken in random order rather
+        # than in ascending agent id, which would make low ids give way most often
+        self.rng.shuffle(conflicts)
+
         for conflict in conflicts:
             conflicting_agent = self.get_agent(conflict["conflicting_agent"])
             if conflicting_agent is None:

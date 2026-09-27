@@ -33,7 +33,10 @@ For each non-idle agent i with an empty route and a target:
 1. `considered = []`. Plan shortest path π_i around `considered` agents only.
 2. `detect_conflicts(π_i)` against **all** agents. If there are none, commit π_i.
 3. Prioritise conflicts by i's detour cost if it had to avoid that agent (`prioritize_conflicts`,
-   Eq. 1), and take the costliest.
+   Eq. 1), and take the costliest. The conflicts are shuffled (`self.rng`) before the stable sort:
+   `detect_conflicts` lists them in ascending agent id and ties are frequent, so the lowest id
+   was otherwise always negotiated with first and, as the side that gives way in about 2/3 of
+   utilitarian negotiations, collected the most delay (ρ(id, delay) −0.21 → −0.03; A* calls −25 %).
 4. Both sides compute `determine_cost_to_change`: Δ = (length of the alternative route that avoids
    the other's path, incl. resting on its end cell) − current route length.
    `determine_other_cost` removes i from `environment.agents` while j's reservation grid is
