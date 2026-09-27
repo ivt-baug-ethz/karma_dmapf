@@ -346,6 +346,21 @@ class Agent:
     ) -> Tuple[int, Optional[List["PathPlannerState"]]]:
         current_cost = len(self.route)
 
+        if current_cost == 0 and len(self.target_position) > 0:
+            # an agent that has not planned in this step yet is compared with its unobstructed
+            # shortest route, not with standing still
+            shortest_route = self.path_planner.convert_path_to_route(
+                self._compute_shortest_path(
+                    start=(
+                        self.current_position[0],
+                        self.current_position[1],
+                        self.current_orientation,
+                    ),
+                    goal=self.target_position,
+                )
+            )
+            current_cost = len(shortest_route if shortest_route else [])
+
         # determine reservation_grid given all already planned routes
         reservation_grid = GridTools.create_3D_reservation_grid(
             environment=self.environment,

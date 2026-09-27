@@ -38,7 +38,9 @@ For each non-idle agent i with an empty route and a target:
    was otherwise always negotiated with first and, as the side that gives way in about 2/3 of
    utilitarian negotiations, collected the most delay (ρ(id, delay) −0.21 → −0.03; A* calls −25 %).
 4. Both sides compute `determine_cost_to_change`: Δ = (length of the alternative route that avoids
-   the other's path, incl. resting on its end cell) − current route length.
+   the other's path, incl. resting on its end cell) − current route length. An agent that has not
+   planned in this step yet (empty route, has a target) is measured against its unobstructed
+   shortest route instead of 0; otherwise it bid its whole route and won almost every negotiation.
    `determine_other_cost` removes i from `environment.agents` while j's reservation grid is
    built, so i is represented only by π_i (written into free cells, resting at its end). Setting
    i's route to π_i instead (as `determine_my_cost` does for j) broke A*'s swap check and produced
