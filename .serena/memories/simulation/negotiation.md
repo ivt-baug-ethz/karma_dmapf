@@ -69,7 +69,11 @@ For each non-idle agent i with an empty route and a target:
    the seeded `env.rng` only: `negotiate_utilitarian` takes it as a required `rng` argument (no global
    `np.random` fallback), Karma uses `agent_self.environment.rng`.
 6. Loop for at most `max(10, 2·n_agents)` iterations. If that fails, or A* returns None, fall back to
-   `plan_route_decentralized_token_passing`.
+   `plan_route_decentralized_token_passing`. If a busy agent finds no path there either, it steps
+   aside to a free nearby cell (`_determine_idle_parking_path` on the same reservation grid). This
+   breaks cyclic deadlocks of three or more route-less agents that stand on each other's targets,
+   which the planning-agent removal of step 4 cannot resolve (2 of 160 runs on 10×10/30 before).
+   The token-passing controller uses the same method.
 
 `cost_mine` / `cost_other` in code = Δ_i / Δ_j in the paper (i = the initiating agent).
 

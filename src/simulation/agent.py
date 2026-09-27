@@ -335,6 +335,10 @@ class Agent:
 
         # determine possible, intersection free path
         path = self._determine_intersection_free_path(reservation_grid)
+        if path is None and not self.is_idle():
+            # a busy agent without any path steps aside to a free cell nearby, which breaks cyclic
+            # deadlocks of agents that wait for each other's cells
+            path = self._determine_idle_parking_path(reservation_grid)
         if path is not None:
             route = self.path_planner.convert_path_to_route(path)
             self.route = route if route is not None else []
