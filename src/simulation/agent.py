@@ -27,7 +27,7 @@ from src.simulation.constants import (
     COST_TO_CHANGE_INFEASIBLE,
     IDLING_NEIGHBORHOOD_SEARCH_RANGE,
 )
-from src.simulation.geometry import GridTools
+from src.simulation.geometry import Geometry, GridTools
 
 
 class Agent:
@@ -268,7 +268,7 @@ class Agent:
         return path
 
     def _determine_idle_parking_path(
-        self, reservation_grid: NDArray[np.int_]
+        self, reservation_grid: NDArray[np.int_], goal: Optional[List[int]] = None
     ) -> Optional[List["PathPlannerState"]]:
         x0, y0 = self.current_position
 
@@ -303,10 +303,18 @@ class Agent:
                 if np.equal(column, -1).all():
                     target_candidates.append([probe_pos_x, probe_pos_y])
 
-        # sort them closest to origin (self.current_position)
+        # sort them by the estimated time to get there (moves and turns) and, if a goal is given,
+        # on to the goal from there
         target_candidates.sort(
-            key=lambda p: (p[0] - x0) ** 2 + (p[1] - y0) ** 2
-        )  # squared distance is enough for ordering[web:19][web:22]
+            key=lambda p: Geometry.travel_time_with_rotation(
+                (x0, y0), (p[0], p[1]), self.current_orientation
+            )
+            + (
+                Geometry.mahattan_distance((p[0], p[1]), (goal[0], goal[1]))
+                if goal
+                else 0
+            )
+        )
 
         # if some found, check if there is a path to one
         for target_candidate in target_candidates:
@@ -338,7 +346,9 @@ class Agent:
         if path is None and not self.is_idle():
             # a busy agent without any path steps aside to a free cell nearby, which breaks cyclic
             # deadlocks of agents that wait for each other's cells
-            path = self._determine_idle_parking_path(reservation_grid)
+            path = self._determine_idle_parking_path(
+                reservation_grid, goal=self.target_position
+            )
         if path is not None:
             route = self.path_planner.convert_path_to_route(path)
             self.route = route if route is not None else []

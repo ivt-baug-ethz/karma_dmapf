@@ -73,7 +73,11 @@ For each non-idle agent i with an empty route and a target:
    aside to a free nearby cell (`_determine_idle_parking_path` on the same reservation grid). This
    breaks cyclic deadlocks of three or more route-less agents that stand on each other's targets,
    which the planning-agent removal of step 4 cannot resolve (2 of 160 runs on 10×10/30 before).
-   The token-passing controller uses the same method.
+   The token-passing controller uses the same method. Parking cells (free for the whole horizon,
+   within ±2) are ranked by the estimated time to reach them, i.e. moves plus the turns before
+   the first move (`Geometry.travel_time_with_rotation`). The step-aside adds the Manhattan
+   distance from the cell to the agent's target, so cells towards the goal win. A* then takes the
+   first reachable candidate. Idle parking uses the same ranking without the goal term.
 
 `cost_mine` / `cost_other` in code = Δ_i / Δ_j in the paper (i = the initiating agent).
 
