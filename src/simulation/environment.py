@@ -402,6 +402,9 @@ class Environment:
             and len(agent.target_position) == 2
         ]
 
+        # a random planning order, so that no agent is systematically first to plan and to give way
+        self.rng.shuffle(planning_relevant_agents)
+
         for agent in planning_relevant_agents:
             # if due to negotiation already changed...skip
             if len(agent.route) > 0:

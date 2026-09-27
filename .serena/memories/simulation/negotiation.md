@@ -24,6 +24,11 @@ old name `DECENTRALIZED_RESPECT` (still in some archived run files) is token pas
 
 ## Negotiation protocol (`handle_agents_route_planning_decentralized_negotiate`, paper Alg. 1)
 
+The planning agents of a step are visited in a random order (`self.rng.shuffle`). With the
+fixed ascending-id order, low ids planned first, gave way most and accumulated the most delay
+(Spearman ρ(id, cumulative delay) ≈ −0.2…−0.4 under utilitarian and Karma, ≈ 0 under egoistic and
+token passing, 2026-09-26 tuning).
+
 For each non-idle agent i with an empty route and a target:
 1. `considered = []`. Plan shortest path π_i around `considered` agents only.
 2. `detect_conflicts(π_i)` against **all** agents. If there are none, commit π_i.
