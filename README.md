@@ -207,5 +207,18 @@ If you found this repository helpful, please cite our work:
 ```
 Kevin Riehl, Julius Schlapbach, Anastasios Kouvelas, Michail A. Makridis
 "Karma Mechanisms for Decentralised, Cooperative Multi Agent Path Finding", 2026.
-Submitted to CDC2026: 65th IEEE Conference on Decision and Control, Honolulu, Hawaii.
+arXiv:2604.07970, https://arxiv.org/abs/2604.07970
+```
+
+```bibtex
+@misc{riehl2026karma,
+  title         = {Karma Mechanisms for Decentralised, Cooperative Multi Agent Path Finding},
+  author        = {Riehl, Kevin and Schlapbach, Julius and Kouvelas, Anastasios and Makridis, Michail A.},
+  year          = {2026},
+  eprint        = {2604.07970},
+  archivePrefix = {arXiv},
+  primaryClass  = {eess.SY},
+  doi           = {10.48550/arXiv.2604.07970},
+  url           = {https://arxiv.org/abs/2604.07970}
+}
 ```
