@@ -46,7 +46,13 @@ across seed jobs.
   way), `C`/`A` = rotate clockwise/anticlockwise, `T` = wait. Each action is one time step.
 - `assign_open_tasks` considers idle **and** CARRY agents (available soon), but only idle agents get
   the task this step. Cost = arrival time − 0.2·wait time (`alpha`), with the arrival estimated via
-  `Geometry.travel_time_with_rotation`.
+  `Geometry.travel_time_with_rotation`. The candidates are shuffled (`self.rng`) before the
+  Hungarian assignment. The costs are integers and ties are frequent, and `linear_sum_assignment`
+  gives a tie to the lower row, so in ascending id order low ids got more trips when agents
+  competed for tasks (5×5/10: ρ(id, trips) −0.16, 2026-09-27).
+- Every id-ordered step that decides who is served first is randomised with `env.rng`: the
+  assignment candidates, the planning order and equal-priority conflicts
+  (`mem:simulation/negotiation`). A new loop over `self.agents` that decides priority needs the same.
 - The pickup is registered as soon as a `PICKUP` agent stands on `from_position`, also in the
   middle of a route. A* routes may pass over the goal and continue to a cell where the agent can
   rest. The agent keeps that already-reserved route, because other agents planned around it, and

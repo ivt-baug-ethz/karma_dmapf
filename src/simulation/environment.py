@@ -72,6 +72,9 @@ class Environment:
         if not candidate_agents or not open_tasks:
             return
 
+        # a random candidate order, so that assignment ties do not always favour low agent ids
+        self.rng.shuffle(candidate_agents)
+
         agent_indices, task_indices = Planner_Assignment_Central.plan_assignment(
             candidate_agents, open_tasks, self.time
         )
