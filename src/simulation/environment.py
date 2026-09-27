@@ -352,6 +352,18 @@ class Environment:
             agent.route = original_route
         return cost_mine, alternative_path_mine
 
+    def determine_other_cost(self, agent, conflicting_agent, current_path):
+        # the planning agent is represented by the path to avoid only: it has no route yet, so it
+        # would otherwise also rest on its current cell forever in the other agent's reservation grid
+        index = self.agents.index(agent)
+        self.agents.pop(index)
+        try:
+            return conflicting_agent.determine_cost_to_change(
+                to_avoid_path=current_path
+            )
+        finally:
+            self.agents.insert(index, agent)
+
     def make_decision(
         self,
         agent,
@@ -414,6 +426,8 @@ class Environment:
             agents_considered: List[Agent] = []
             current_path: Optional[List[PathPlannerState]] = None
             found_conflict_free_path: bool = False
+            # routes of the agents that gave way, which assumed that this agent leaves its cell
+            yielded_routes: List[Tuple[Agent, List[str]]] = []
 
             # # safety guard to avoid infinite negotiation loops
             max_iterations: int = max(10, len(self.agents) * 2)
@@ -465,10 +479,8 @@ class Environment:
 
                 # solve conflict
                 # determine costs
-                change_cost_other, alternative_path_other = (
-                    conflicting_agent.determine_cost_to_change(
-                        to_avoid_path=current_path
-                    )
+                change_cost_other, alternative_path_other = self.determine_other_cost(
+                    agent, conflicting_agent, current_path
                 )
                 change_cost_mine, alternative_path_mine = self.determine_my_cost(
                     agent, conflicting_agent, current_path
@@ -505,6 +517,9 @@ class Environment:
                 ] += 1
 
                 if other_resolves_conflict and alternative_path_other is not None:
+                    yielded_routes.append(
+                        (conflicting_agent, list(conflicting_agent.route))
+                    )
                     conflicting_agent.change_path_to_satisfy(
                         change_to_path=alternative_path_other
                     )
@@ -522,3 +537,9 @@ class Environment:
                 agent.plan_route_decentralized_token_passing()
                 if self.settings["debug_statements"]:
                     print("\tnegotiations failed")
+
+            # an agent without a route stays on its cell, so the agents that gave way to it get
+            # their previous routes back (these were planned with this agent resting there)
+            if len(agent.route) == 0:
+                for yielded_agent, previous_route in reversed(yielded_routes):
+                    yielded_agent.route = previous_route

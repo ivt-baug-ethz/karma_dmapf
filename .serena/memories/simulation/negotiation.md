@@ -35,7 +35,18 @@ For each non-idle agent i with an empty route and a target:
 3. Prioritise conflicts by i's detour cost if it had to avoid that agent (`prioritize_conflicts`,
    Eq. 1), and take the costliest.
 4. Both sides compute `determine_cost_to_change`: Δ = (length of the alternative route that avoids
-   the other's path, incl. resting on its end cell) − current route length. The avoided path is
+   the other's path, incl. resting on its end cell) − current route length.
+   `determine_other_cost` removes i from `environment.agents` while j's reservation grid is
+   built, so i is represented only by π_i (written into free cells, resting at its end). Setting
+   i's route to π_i instead (as `determine_my_cost` does for j) broke A*'s swap check and produced
+   edge conflicts in 7 of 20 smoke runs; do not reintroduce it. Before the fix, i (empty route)
+   also rested on its current cell forever in j's reservation grid, which inflated Δ_j and caused
+   permanent deadlocks when two agents' targets were each other's cells (both "no alternative",
+   both yield forever; 5–10 % of T = 300 runs and 20–50 % of T = 1000 runs had an agent that
+   stopped completing trips). Safety net: agents that gave way did so assuming i leaves its cell,
+   so if i ends the step without a route (negotiation and token-passing fallback both failed), the
+   loop restores their previous routes (`yielded_routes`), which were planned with i resting there.
+   Without it the fix produced vertex collisions (1 of 12 runs on 10×10/30). The avoided path is
    written into the reservation grid **only in free cells**. Overwriting the ids of other agents would
    break A*'s swap check, which needs the same id on both cells, and would let edge conflicts through. 
    - No alternative: `COST_TO_CHANGE_INFEASIBLE` (`constants.py`), written `inf` below. It is
